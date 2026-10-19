@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: tribe-lab-beta
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: X-Robots-Tag
+        value: noindex, nofollow
