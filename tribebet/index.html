@@ -1,0 +1,3219 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0c0610">
+<title>TribeBet · Beta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Unbounded:wght@800;900&display=swap">
+<style>
+/* ═══ TribeBet · Mesas — CSS de la página (familia TRIBE LAB, el oro manda) ═══
+   Fuente: build/host.css. build/assemble.py pone en los marcadores el bloque canónico de tokens de briefs/brand.md,
+   build/tb.css (tal cual, una sola vez), build/cajero.css y pantera/pantera.css. Tema oscuro único, móvil primero. */
+:root{
+  color-scheme:dark;
+  --ink:#0c0610; --ink-2:#08040b; --deck:#170c1d; --deck-2:#21132a; --line:#3a2443; --line-ctl:#7d6789;
+  --bone:#f4ecf7; --mute:#b9a7c1; --dim:#9c8aa6; --gold:#e8cf7a; --on-gold:#1a1202; --mag:#e46bff; --mint:#3dffc0; --lose:#ff7d6e;
+  --jungle:#04100b; --felt:#0c241a;
+  /* mesas: ruleta y naipes. Texto --naipe sobre rojo 5.25:1, sobre verde 4.61:1, sobre negro 15.8:1 */
+  --mesa-rojo:#b3352c; --mesa-verde:#1f7a4d; --mesa-negro:#1a1220; --naipe:#f4ecf7; --naipe-tinta:#170c1d;
+  --tribu-condor:#6aa5f0; --tribu-serpiente:#35c9b0; --tribu-lobo:#b79cf2; --tribu-caiman:#f0916f; --tribu-pantera:#e8cf7a;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+  --radius-sm:6px; --radius-md:10px; --radius-lg:14px; --radius-full:999px;
+  --display:"Unbounded","Arial Black","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --font-display:var(--display); --font-mono:var(--mono);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--ink);color:var(--bone);font:400 16px/1.65 var(--mono);-webkit-font-smoothing:antialiased}
+::selection{background:var(--gold);color:var(--on-gold)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ═══ TribeBet · componentes compartidos (prefijo tb-) ═══
+   Fuente única: build/tb.css. El manual de identidad lo publica como components/bundle.css y la demo lo incluye tal cual.
+   Lee los tokens del manual: --ink --ink-2 --deck --deck-2 --line --line-ctl --bone --mute --dim --gold --on-gold --mint --lose,
+   --tribu-condor --tribu-serpiente --tribu-lobo --tribu-caiman, --radius-md --radius-lg --radius-full, --font-display --font-mono.
+   Reglas de la familia TRIBE: botones y sellos en pastilla, tarjetas con borde fino y sin sombra, el oro es la acción,
+   la selección nunca se marca solo con color (lleva palomita o cambio de relleno), y solo se animan transform y opacity. */
+
+/* ── Boton ── */
+.tb-btn{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;min-height:48px;margin:0;padding:0 26px;border:1px solid var(--line-ctl);border-radius:var(--radius-full);background:var(--deck);color:var(--bone);font:700 13px/1.2 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;text-align:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .15s cubic-bezier(.2,.7,.2,1)}
+.tb-btn::before,.tb-btn::after{content:"";position:absolute;inset:-1px;z-index:-1;border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .18s cubic-bezier(.2,.7,.2,1)}
+.tb-btn::before{border:1px solid var(--bone);background:var(--deck-2)}
+.tb-btn::after{border:1px solid var(--line-ctl);background:var(--ink-2)}
+@media (hover:hover){.tb-btn:hover::before{opacity:1}}
+.tb-btn:active{transform:scale(.97)}
+.tb-btn:active::before{opacity:0}
+.tb-btn:active::after{opacity:1}
+.tb-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tb-btn:disabled,.tb-btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed;transform:none}
+.tb-btn:disabled::before,.tb-btn:disabled::after,.tb-btn[aria-disabled="true"]::before,.tb-btn[aria-disabled="true"]::after{opacity:0}
+.tb-btn--primario{border-color:transparent;background:var(--gold);color:var(--on-gold)}
+.tb-btn--primario::before{border:0;background:var(--bone)}
+.tb-btn--primario::after{border:0;background:var(--on-gold)}
+@media (hover:hover){.tb-btn--primario:hover::before{opacity:.4}}
+.tb-btn--primario:active::before{opacity:0}
+.tb-btn--primario:active::after{opacity:.2}
+.tb-btn--peligro{border-color:var(--lose);color:var(--lose)}
+.tb-btn--peligro::before,.tb-btn--peligro::after{border-color:var(--lose)}
+.tb-btn--compacto{min-height:44px;padding:0 16px;font-size:12px}
+.tb-btn--bloque{display:flex;width:100%}
+.tb-btn--texto{min-height:44px;padding:0 4px;border-color:transparent;border-radius:0;background:none;color:var(--bone);text-decoration:underline;text-decoration-color:var(--line-ctl);text-decoration-thickness:1px;text-underline-offset:6px}
+.tb-btn--texto::before,.tb-btn--texto::after{display:none}
+@media (hover:hover){.tb-btn--texto:hover{text-decoration-color:var(--gold);text-decoration-thickness:2px}}
+.tb-btn--texto:active{transform:translateY(1px)}
+
+/* ── Ficha (valor de apuesta en una mesa) ── */
+.tb-ficha{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:48px;height:48px;margin:0;padding:0;border:2px dashed var(--line-ctl);border-radius:var(--radius-full);background:var(--deck-2);color:var(--bone);font:700 13px/1 var(--font-mono);font-variant-numeric:tabular-nums;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .15s cubic-bezier(.2,.7,.2,1)}
+.tb-ficha:active{transform:scale(.95)}
+.tb-ficha:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tb-ficha[aria-pressed="true"],.tb-ficha[aria-checked="true"]{border:2px solid var(--gold);background:var(--gold);color:var(--on-gold)}
+
+/* ── Saldo ── */
+.tb-saldo{display:inline-flex;align-items:baseline;gap:10px;box-sizing:border-box;min-height:48px;padding:11px 18px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck)}
+.tb-saldo__label{font:700 12px/1.3 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.tb-saldo__monto{font:800 20px/1.2 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--gold)}
+
+/* ── Sello (pastilla de estado; no es un botón) ── */
+.tb-sello{display:inline-flex;align-items:center;gap:6px;box-sizing:border-box;min-height:28px;padding:0 18px;border:1px solid var(--mint);border-radius:var(--radius-full);color:var(--mint);font:700 12px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.tb-sello--gana{border-color:var(--mint);color:var(--mint)}
+.tb-sello--neutro{border-color:var(--line-ctl);color:var(--bone)}
+.tb-sello--oro{border-color:var(--gold);color:var(--gold)}
+.tb-sello--pierde{border-color:var(--lose);color:var(--lose)}
+
+/* ── EstadoPago (cada estado tiene forma propia: aro, punto, palomita, equis) ── */
+.tb-estado{display:inline-flex;align-items:flex-start;gap:10px;font:700 12px/1.35 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.tb-estado__forma{position:relative;flex:none;box-sizing:border-box;width:14px;height:14px;margin-top:1px;border:2px solid currentColor;border-radius:50%}
+.tb-estado--proceso{color:var(--gold)}
+.tb-estado--proceso .tb-estado__forma::before{content:"";position:absolute;inset:2px;border-radius:50%;background:currentColor;animation:tb-latido 1.2s ease-in-out infinite}
+.tb-estado--listo{color:var(--mint)}
+.tb-estado--listo .tb-estado__forma{border:0;background:currentColor}
+.tb-estado--listo .tb-estado__forma::before{content:"";position:absolute;inset:2px;background:var(--ink-2);clip-path:polygon(12% 50%,0 64%,38% 100%,100% 24%,87% 12%,37% 70%)}
+.tb-estado--falla{color:var(--lose)}
+.tb-estado--falla .tb-estado__forma{border:0;border-radius:0}
+.tb-estado--falla .tb-estado__forma::before,.tb-estado--falla .tb-estado__forma::after{content:"";position:absolute;left:6px;top:-1px;width:2px;height:16px;background:currentColor;transform:rotate(45deg)}
+.tb-estado--falla .tb-estado__forma::after{transform:rotate(-45deg)}
+@keyframes tb-latido{50%{opacity:.3}}
+
+/* ── Campo ── */
+.tb-campo{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;max-width:360px;align-content:start}
+.tb-campo__label{font:700 12px/1.5 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.tb-campo__input{display:block;box-sizing:border-box;width:100%;height:48px;margin:0;padding:0 14px;border:1px solid var(--line-ctl);border-radius:var(--radius-md);background:var(--deck);color:var(--bone);font:400 16px/1.2 var(--font-mono)}
+.tb-campo__input::placeholder{color:var(--dim);opacity:1}
+.tb-campo__input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tb-campo__ayuda{font:400 14px/1.5 var(--font-mono);color:var(--dim)}
+.tb-campo__error{display:flex;align-items:flex-start;gap:8px;font:400 14px/1.5 var(--font-mono);color:var(--lose)}
+.tb-campo__error::before{content:"!";flex:none;box-sizing:border-box;width:18px;height:18px;margin-top:1px;border:1.5px solid currentColor;border-radius:50%;font-weight:700;font-size:12px;line-height:15px;text-align:center}
+.tb-campo--error .tb-campo__input{border:2px solid var(--lose);padding-left:13px}
+
+/* ── Tarjeta ── */
+.tb-tarjeta{box-sizing:border-box;padding:clamp(16px,5vw,24px);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck)}
+.tb-tarjeta__k{display:block;margin:0 0 8px;font:700 12px/1.5 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.tb-tarjeta__titulo{margin:0 0 8px;font:800 20px/1.15 var(--font-display);letter-spacing:-.015em;color:var(--bone)}
+.tb-tarjeta__texto{margin:0;font:400 15px/1.6 var(--font-mono);color:var(--mute)}
+.tb-tarjeta--activa{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+
+/* ── TarjetaTribu (opción de un radiogroup) ── */
+.tb-tribu{--tribu:var(--gold);position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;justify-items:start;align-content:start;box-sizing:border-box;min-height:96px;margin:0;padding:20px 56px 20px 20px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck);color:var(--bone);font:400 16px/1.65 var(--font-mono);text-align:left;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .15s cubic-bezier(.2,.7,.2,1)}
+.tb-tribu::after{content:"";position:absolute;top:20px;right:20px;box-sizing:border-box;width:24px;height:24px;border:1.5px solid var(--line-ctl);border-radius:50%;background:var(--ink-2)}
+.tb-tribu:active{transform:scale(.985)}
+.tb-tribu:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tb-tribu__totem{display:block;width:48px;height:48px;margin-bottom:4px;color:var(--tribu)}
+.tb-tribu__nombre{font:800 17px/1.2 var(--font-display);letter-spacing:-.01em;text-transform:uppercase;color:var(--tribu)}
+.tb-tribu__lema{font:400 14px/1.55 var(--font-mono);color:var(--mute)}
+.tb-tribu[aria-checked="true"]{border-color:var(--tribu);box-shadow:inset 0 0 0 1px var(--tribu);background:var(--deck-2)}
+.tb-tribu[aria-checked="true"]::after{border-color:var(--tribu);background:var(--tribu) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.2 7.4l3.2 3.2 6.4-7' fill='none' stroke='%2308040b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px 14px no-repeat}
+.tb-tribu--condor{--tribu:var(--tribu-condor)}
+.tb-tribu--serpiente{--tribu:var(--tribu-serpiente)}
+.tb-tribu--lobo{--tribu:var(--tribu-lobo)}
+.tb-tribu--caiman{--tribu:var(--tribu-caiman)}
+.tb-tribu--pantera{--tribu:var(--gold);border-style:dashed;border-color:var(--line-ctl);background:var(--ink);cursor:not-allowed}
+.tb-tribu--pantera:active{transform:none}
+.tb-tribu--pantera::after{border:0;border-radius:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 11V8a5 5 0 0110 0v3' fill='none' stroke='%23e8cf7a' stroke-width='2'/%3E%3Crect x='5' y='11' width='14' height='10' fill='none' stroke='%23e8cf7a' stroke-width='2'/%3E%3Crect x='11' y='14.5' width='2' height='3' fill='%23e8cf7a'/%3E%3C/svg%3E") center/24px 24px no-repeat}
+
+/* ── PaqueteCreditos (opción de un radiogroup) ── */
+.tb-paquete{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:4px;justify-items:start;align-content:start;box-sizing:border-box;min-width:156px;margin:0;padding:16px;border:1px solid var(--line-ctl);border-radius:var(--radius-lg);background:var(--deck-2);color:var(--bone);font:400 16px/1.4 var(--font-mono);text-align:left;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .15s cubic-bezier(.2,.7,.2,1)}
+.tb-paquete::after{content:"";position:absolute;right:14px;bottom:14px;box-sizing:border-box;width:22px;height:22px;border:1.5px solid var(--line-ctl);border-radius:50%;background:var(--ink-2)}
+.tb-paquete:active{transform:scale(.985)}
+.tb-paquete:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tb-paquete__creditos{font:900 24px/1.05 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--bone)}
+.tb-paquete__unidad{font:700 12px/1.5 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.tb-paquete__precio{margin-top:8px;padding-right:30px;font:700 14px/1.6 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--gold)}
+.tb-paquete[aria-checked="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.tb-paquete[aria-checked="true"]::after{border-color:var(--gold);background:var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.2 7.4l3.2 3.2 6.4-7' fill='none' stroke='%231a1202' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/13px 13px no-repeat}
+
+/* ── OrdenPago ── */
+.tb-orden{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;box-sizing:border-box;min-width:0;padding:clamp(16px,5vw,24px);border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck)}
+.tb-orden__cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.tb-orden__k{display:block;margin:0 0 4px;font:700 12px/1.5 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.tb-orden__monto{font:900 30px/1.05 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--gold)}
+.tb-orden__monto small{font:700 13px/1 var(--font-mono);letter-spacing:.06em;color:var(--mute)}
+.tb-orden__dato{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 8px 8px 14px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--ink)}
+.tb-orden__valor{min-width:0;font:400 13px/1.5 var(--font-mono);color:var(--mute);word-break:break-all}
+.tb-orden__valor b{font-weight:700;color:var(--bone)}
+.tb-orden__copiar{flex:none;box-sizing:border-box;min-height:44px;margin:0;padding:0 16px;border:1px solid var(--line-ctl);border-radius:var(--radius-full);background:var(--deck);color:var(--bone);font:700 12px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tb-orden__copiar:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tb-orden__reloj{font:700 13px/1.3 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--gold)}
+.tb-orden__pasos{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.tb-orden__aviso{margin:0;font:400 14px/1.55 var(--font-mono);color:var(--mute)}
+
+@media (prefers-reduced-motion:reduce){
+  .tb-btn,.tb-btn::before,.tb-btn::after,.tb-ficha,.tb-tribu,.tb-paquete{transition:none}
+  .tb-estado--proceso .tb-estado__forma::before{animation:none}
+}
+
+
+/* ── contenedor de página ── */
+.top-in,.tabs,.mesa,.pie{width:min(1140px,100% - 32px);margin-left:auto;margin-right:auto}
+
+/* ── barra superior ──
+   Móvil: la fila marca + saldo (.top) queda pegada arriba; el sello y los dos botones (.top-acc) van debajo y se van con el scroll.
+   Escritorio: todo en una sola fila pegada (.cab). */
+.cab,.top-in{display:contents}
+.top{position:sticky;top:0;z-index:40;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--ink)}
+.marca-caja{min-width:0;margin-right:auto}
+.marca{display:flex;align-items:center;gap:8px;font:900 18px/1 var(--display);letter-spacing:-.03em;white-space:nowrap;color:var(--bone)}
+.marca b{font-weight:900;color:var(--gold)}
+.marca-iso{flex:none;width:32px;height:32px}
+.top-sub{display:none;margin-top:6px;font:700 12px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.top .tb-saldo{min-height:44px;margin-left:auto;padding:8px 14px;gap:8px}
+.top .tb-saldo__monto{display:inline-block;font-size:17px;transition:transform .15s cubic-bezier(.2,.7,.2,1)}
+.top .tb-saldo__monto.pulso{transform:scale(1.08)}
+.top-acc{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:min(1140px,100% - 32px);margin:12px auto 0}
+.top-acc .tb-sello{margin-right:auto}
+.solo-ancho{display:none}
+
+/* ── pestañas: 3 × 2 en móvil, una fila en escritorio ── */
+.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.tab{min-width:0;min-height:48px;padding:0 6px;border:1px solid var(--line-ctl);border-radius:var(--radius-full);background:var(--ink-2);color:var(--bone);font:700 12px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tab[aria-selected="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);background:var(--deck-2);color:var(--gold)}
+.tab[aria-selected="true"]::before{content:"";display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:var(--gold);vertical-align:1px}
+@media (hover:hover){.tab:hover{border-color:var(--bone)}.tab[aria-selected="true"]:hover{border-color:var(--gold)}}
+
+/* ── panel de cada pestaña ── */
+.mesa{margin-top:16px;scroll-margin-top:76px}
+.mesa--pano{padding:20px 16px 24px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--felt)}
+/* cabecera de panel = la del módulo PANTERA: ceja menta, título Unbounded 800 en mayúsculas, lema */
+.mesa-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-bottom:20px}
+.ceja{flex:0 0 100%;font:700 12px/1.35 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mint)}
+.mesa-head h2{font:800 clamp(26px,6vw,52px)/1.04 var(--display);letter-spacing:-.02em;text-transform:uppercase;text-wrap:balance;color:var(--bone)}
+.regla{flex:0 0 100%;margin-top:4px;padding-right:max(0px,100% - 72ch);font-size:14px;line-height:1.6;color:var(--mute);text-wrap:pretty}
+.sub-mono{display:block;margin:16px 0 8px;font:700 12px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* ── controles de apuesta ── */
+.fila-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}
+.fichas{display:flex;gap:8px}
+.fila-ctrl>.tb-btn{flex:1 1 120px;white-space:nowrap}
+
+/* ── estado de la mano (a favor en menta, en contra en coral, siempre con palabra y signo) ── */
+.estado{min-height:30px;margin:12px 0 4px;font-size:15px;line-height:1.55;color:var(--mute)}
+.estado b{color:var(--bone)}
+.estado .g{font-weight:700;color:var(--mint)}
+.estado .p{font-weight:700;color:var(--lose)}
+
+/* ── zonas (tarjetas) y naipes ── */
+.zona{margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck)}
+.titulo-zona{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px}
+.puntos{font:700 14px/1.4 var(--mono);font-variant-numeric:tabular-nums;color:var(--gold)}
+.vs{display:grid;grid-template-columns:minmax(0,1fr);gap:0 14px}
+.mano{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:calc(clamp(48px,13vw,64px)*1.4375)}
+.cj{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:clamp(48px,13vw,64px);aspect-ratio:64/92;padding:6px 7px;border:1px solid var(--line-ctl);border-radius:var(--radius-sm);background:var(--naipe);color:var(--naipe-tinta);animation:reparte .28s ease-out}
+.cj .cr{font:700 19px/1 var(--mono)}
+.cj .cs{align-self:flex-end;font-size:22px;line-height:1;font-variant-emoji:text}
+.cj.roja{color:var(--mesa-rojo)}
+.cj.dorso{background:repeating-linear-gradient(45deg,var(--deck-2) 0 6px,var(--ink-2) 6px 12px)}
+.cj.dorso::after{content:"";position:absolute;inset:4px;border:1px solid var(--gold);border-radius:3px}
+@keyframes reparte{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+
+/* ── ruleta: rueda + tablero (vertical en móvil, horizontal desde 760px) ── */
+.rul{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
+.rul>*{min-width:0}
+.rueda-caja{padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck);text-align:center}
+#rueda{display:block;width:100%;max-width:340px;height:auto;margin:0 auto}
+.hist{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:28px;margin-top:12px}
+.hist span{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font:700 12px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--naipe)}
+.hist .hr{background:var(--mesa-rojo)}
+.hist .hn{border:1px solid var(--line-ctl);background:var(--mesa-negro)}
+.hist .hv{background:var(--mesa-verde)}
+.tablero{display:grid;gap:4px;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:minmax(44px,auto)}
+.celda{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:44px;padding:0 2px;border:1px solid var(--line-ctl);border-radius:var(--radius-sm);background:var(--mesa-negro);color:var(--naipe);font:700 14px/1 var(--mono);font-variant-numeric:tabular-nums;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.celda.r{background:var(--mesa-rojo)}
+.celda.v{background:var(--mesa-verde)}
+.celda.ext{flex-direction:column;background:var(--deck-2);color:var(--bone);font-size:12px;letter-spacing:.04em}
+@media (hover:hover){.celda:hover{border-color:var(--gold)}}
+.celda .chip{position:absolute;right:-4px;top:-8px;z-index:1;padding:2px 6px;border:1px solid var(--on-gold);border-radius:var(--radius-full);background:var(--gold);color:var(--on-gold);font:700 12px/1.2 var(--mono);letter-spacing:0}
+.rombo{display:inline-block;flex:none;width:11px;height:11px;border-radius:2px;transform:rotate(45deg)}
+@media (max-width:759.98px){
+  /* el script coloca cada casilla con estilo en línea pensado para el tablero horizontal; aquí se traspone a 5 columnas */
+  .celda[style^="grid-row:1;"]{grid-column:3!important}
+  .celda[style^="grid-row:2;"]{grid-column:2!important}
+  .celda[style^="grid-row:3;"]{grid-column:1!important}
+  .celda[style$="grid-column:2"]{grid-row:2!important}
+  .celda[style$="grid-column:3"]{grid-row:3!important}
+  .celda[style$="grid-column:4"]{grid-row:4!important}
+  .celda[style$="grid-column:5"]{grid-row:5!important}
+  .celda[style$="grid-column:6"]{grid-row:6!important}
+  .celda[style$="grid-column:7"]{grid-row:7!important}
+  .celda[style$="grid-column:8"]{grid-row:8!important}
+  .celda[style$="grid-column:9"]{grid-row:9!important}
+  .celda[style$="grid-column:10"]{grid-row:10!important}
+  .celda[style$="grid-column:11"]{grid-row:11!important}
+  .celda[style$="grid-column:12"]{grid-row:12!important}
+  .celda[style$="grid-column:13"]{grid-row:13!important}
+  .celda[style$="grid-column:14"]{grid-row:14!important}
+  .celda[data-key="num:0"]{grid-row:1!important;grid-column:1/4!important}
+  .celda[data-key="d1"]{grid-row:2/6!important;grid-column:4!important}
+  .celda[data-key="d2"]{grid-row:6/10!important;grid-column:4!important}
+  .celda[data-key="d3"]{grid-row:10/14!important;grid-column:4!important}
+  .celda[data-key="bajo"]{grid-row:2/4!important;grid-column:5!important}
+  .celda[data-key="par"]{grid-row:4/6!important;grid-column:5!important}
+  .celda[data-key="rojo"]{grid-row:6/8!important;grid-column:5!important}
+  .celda[data-key="negro"]{grid-row:8/10!important;grid-column:5!important}
+  .celda[data-key="impar"]{grid-row:10/12!important;grid-column:5!important}
+  .celda[data-key="alto"]{grid-row:12/14!important;grid-column:5!important}
+}
+
+/* ── Club ── */
+.club-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.carta{padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck)}
+.conx{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.conx>div{flex:1 1 160px;min-width:0}
+.conx .logo-p{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--line-ctl);border-radius:var(--radius-md);background:var(--deck-2);color:var(--bone);font:900 18px/1 var(--display)}
+.conx h3{font:800 17px/1.2 var(--display);letter-spacing:-.01em;color:var(--bone)}
+.estado-c{font-size:13px;line-height:1.5;color:var(--dim)}
+.estado-c.on{color:var(--mint)}
+.evento{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.55;color:var(--mute)}
+.evento:last-of-type{border-bottom:none}
+.evento .cuando{flex:none;font:700 12px/1.4 var(--mono);letter-spacing:.06em;color:var(--bone)}
+.evento .tagp{flex:none;display:inline-flex;align-items:center;min-height:24px;padding:0 10px;border:1px solid var(--line-ctl);border-radius:var(--radius-full);font:700 12px/1 var(--mono);letter-spacing:.1em;color:var(--bone)}
+.evento>span:last-child{flex:1 1 100%}
+.tiers{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.tier{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck)}
+.tier.act-t{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.tier h3{font:800 17px/1.2 var(--display);letter-spacing:-.01em;color:var(--bone)}
+.tier .precio{font:900 26px/1.05 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--bone)}
+.tier .precio small{font:400 13px/1 var(--mono);letter-spacing:0;color:var(--dim)}
+.tier .tok{font:700 14px/1.5 var(--mono);font-variant-numeric:tabular-nums;color:var(--gold)}
+.tier .beneficio{font-size:14px;line-height:1.55;color:var(--mute)}
+.tier .tb-btn{margin-top:auto}
+.ledger{list-style:none;font-size:13px}
+.ledger li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--mute)}
+.ledger li:last-child{border-bottom:none}
+.ledger li b{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--bone)}
+.ledger li b.mas{color:var(--mint)}
+.nota-carril{font-size:14px;line-height:1.65;color:var(--mute)}
+.nota-carril+.nota-carril{margin-top:12px}
+.nota-carril b{color:var(--bone)}
+
+/* ── notas y pie ── */
+.nota-juego{max-width:76ch;margin-top:16px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--deck);font-size:14px;line-height:1.6;color:var(--mute)}
+.pie{margin-top:32px;margin-bottom:48px;padding-top:20px;border-top:1px solid var(--line)}
+.nota{max-width:76ch;font-size:13px;line-height:1.7;color:var(--mute)}
+.nota+.nota{margin-top:8px}
+.nota--resp{font-weight:700;color:var(--bone)}
+
+/* ═══ Cajero · reglas de página (.cj-*). Los componentes compartidos (tb-) viven en build/tb.css ═══ */
+.cj-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+.cj-col{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+.cj-paso{min-width:0}
+.cj-ayuda{margin:0 0 14px;font-size:14px;line-height:1.55;color:var(--mute)}
+.cj-paquetes{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.cj-redes{display:flex;flex-wrap:wrap;gap:8px}
+.cj-red{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 18px 0 14px;border:1px solid var(--line-ctl);border-radius:var(--radius-full);background:var(--deck-2);color:var(--bone);font:700 12px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.cj-red::before{content:"";flex:none;box-sizing:border-box;width:16px;height:16px;border:1.5px solid var(--line-ctl);border-radius:50%;background:var(--ink-2)}
+.cj-red[aria-checked="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.cj-red[aria-checked="true"]::before{border-color:var(--gold);background:radial-gradient(circle,var(--gold) 0 3.5px,var(--ink-2) 4.5px)}
+.cj-nota{font-size:14px;line-height:1.65;color:var(--mute)}
+.cj-nota b{color:var(--bone)}
+.cj-redes+.cj-nota{margin-top:14px}
+.cj-nota+.cj-nota{margin-top:6px}
+.cj-orden{scroll-margin-top:76px}
+.cj-recibes{min-width:0;font-size:13px;line-height:1.5;color:var(--mute)}
+.cj-msg{min-height:24px;font-size:14px;line-height:1.55;color:var(--mute)}
+.cj-msg b{color:var(--bone)}
+.cj-msg .g{font-weight:700;color:var(--mint)}
+.cj-msg .p{font-weight:700;color:var(--lose)}
+.cj-vacio{padding:32px 24px;border:1px dashed var(--line-ctl);border-radius:var(--radius-lg);font-size:14px;line-height:1.6;text-align:center;color:var(--dim)}
+.cj-sim{padding:16px;border:1px dashed var(--line-ctl);border-radius:var(--radius-lg);background:var(--ink-2)}
+.cj-k{display:block;margin:0 0 8px;font:700 12px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.cj-botones{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.cj-pie{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start;margin-top:16px}
+.cj-hist{list-style:none;font-size:13px}
+.cj-hist li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--mute)}
+.cj-hist li:last-child{border-bottom:none}
+.cj-hist b{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--bone)}
+.cj-hist b.mas{color:var(--mint)}
+.cj-falta{margin:4px 0 14px;padding-left:24px;font-size:14px;line-height:1.6;color:var(--mute)}
+.cj-falta li{padding-left:4px}
+.cj-falta li+li{margin-top:8px}
+.cj-falta li::marker{font-weight:700;color:var(--gold)}
+@media (min-width:600px){.cj-paquetes{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:760px){.cj-orden{scroll-margin-top:100px}}
+@media (min-width:900px){.cj-pie{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}}
+@media (min-width:1100px){.cj-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:24px}}
+
+
+/* PANTERA — TribeBet. Todos los selectores llevan prefijo .pt-
+   La página anfitriona define los tokens de marca en :root; aquí solo se leen.
+   Los alias --pt-* viven dentro de .pt-root y llevan el valor de marca como respaldo. */
+
+.pt-root{
+  --pt-ink:var(--ink,#0c0610);
+  --pt-ink-2:var(--ink-2,#08040b);
+  --pt-deck:var(--deck,#170c1d);
+  --pt-deck-2:var(--deck-2,#21132a);
+  --pt-line:var(--line,#3a2443);
+  --pt-line-ctl:var(--line-ctl,#7d6789);
+  --pt-bone:var(--bone,#f4ecf7);
+  --pt-mute:var(--mute,#b9a7c1);
+  --pt-dim:var(--dim,#9c8aa6);
+  --pt-gold:var(--gold,#e8cf7a);
+  --pt-on-gold:var(--on-gold,#1a1202);
+  --pt-mag:var(--mag,#e46bff);
+  --pt-mint:var(--mint,#3dffc0);
+  --pt-lose:var(--lose,#ff7d6e);
+  --pt-jungle:var(--jungle,#04100b);
+  --pt-display:var(--display,"Unbounded","Arial Black","Helvetica Neue",Arial,sans-serif);
+  --pt-mono:var(--mono,"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace);
+  --pt-radio:14px;
+
+  container-type:inline-size;
+  container-name:pt;
+  min-width:0;
+  font-family:var(--pt-mono);
+  font-size:16px;
+  line-height:1.65;
+  font-weight:400;
+  color:var(--pt-bone);
+  text-align:left;
+  -webkit-font-smoothing:antialiased;
+}
+.pt-root *,
+.pt-root *::before,
+.pt-root *::after{box-sizing:border-box}
+.pt-root [hidden]{display:none!important}
+
+.pt-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ── Rejilla: una columna en móvil ── */
+.pt-marco{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.pt-previo,
+.pt-campo,
+.pt-accion,
+.pt-extra{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+.pt-campo{gap:8px}
+
+/* ── Cabecera ── */
+.pt-cab{display:grid;gap:4px;min-width:0}
+.pt-label,
+.pt-ceja{margin:0;font-family:var(--pt-mono);font-size:12px;font-weight:700;line-height:1.35;letter-spacing:.1em;text-transform:uppercase;color:var(--pt-dim)}
+.pt-ceja{color:var(--pt-mint)}
+.pt-titulo{margin:0;font-family:var(--pt-display);font-weight:800;font-size:clamp(26px,6vw,52px);font-size:clamp(26px,6cqi,52px);line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;color:var(--pt-bone)}
+.pt-lema{margin:4px 0 0;max-width:60ch;color:var(--pt-mute);text-wrap:pretty}
+.pt-aviso-legal{display:flex;align-items:center;gap:10px;margin:8px 0 0}
+.pt-reglas{font-size:14px;line-height:1.45;color:var(--pt-bone)}
+
+/* ── Selectores: modo y apuesta ── */
+.pt-grupo{display:grid;gap:6px;min-width:0}
+.pt-fila-label{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.pt-saldo-n{font-weight:700;color:var(--pt-gold);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.pt-segmento{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pt-fichas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+
+.pt-opcion,
+.pt-boton{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-width:0;min-height:48px;margin:0;padding:0 14px;
+  border:1px solid var(--pt-line-ctl);border-radius:999px;
+  background:var(--pt-deck);color:var(--pt-bone);
+  font-family:var(--pt-mono);font-size:13px;font-weight:700;line-height:1;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  opacity:1;transition:transform .15s ease-out,opacity .15s ease-out;
+}
+.pt-opcion--num{font-size:15px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.pt-marca{display:none;flex:none}
+.pt-opcion[aria-pressed="true"]{padding:0 13px;border:2px solid var(--pt-gold);background:var(--pt-deck-2);color:var(--pt-gold)}
+.pt-opcion[aria-pressed="true"] .pt-marca{display:block}
+@media (hover:hover){
+  .pt-opcion:hover:not(:disabled):not([aria-pressed="true"]),
+  .pt-boton:hover:not(:disabled){border-color:var(--pt-bone)}
+}
+.pt-opcion:active:not(:disabled),
+.pt-boton:active:not(:disabled){transform:scale(.97)}
+.pt-opcion:disabled,
+.pt-boton:disabled{opacity:.5;cursor:not-allowed}
+.pt-opcion:focus-visible,
+.pt-boton:focus-visible,
+.pt-cobrar:focus-visible,
+.pt-toque:focus-visible{outline:2px solid var(--pt-gold);outline-offset:2px}
+
+/* ── Marcador ── */
+.pt-hud{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;padding:0}
+.pt-root[data-pt-modo="caceria"] .pt-hud{grid-template-columns:minmax(0,1fr) minmax(0,1.8fr) minmax(0,1fr)}
+.pt-dato{display:grid;align-content:start;gap:2px;min-width:0;padding:10px 12px;background:var(--pt-deck);border:1px solid var(--pt-line);border-radius:var(--pt-radio)}
+.pt-cifra{margin:0;font-family:var(--pt-display);font-weight:800;font-size:22px;font-size:clamp(20px,6.2cqi,32px);line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--pt-bone)}
+.pt-cifra--oro{font-weight:900;font-size:24px;font-size:clamp(22px,6.6cqi,38px);color:var(--pt-gold)}
+.pt-cifra--oro[data-pt-cero]{color:var(--pt-dim)}
+.pt-pulso{animation:pt-pulso .22s ease-out}
+@keyframes pt-pulso{from{transform:scale(1.12)}to{transform:scale(1)}}
+
+/* ── Escena ── */
+.pt-escena{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--pt-radio);background:var(--pt-jungle);isolation:isolate;-webkit-user-select:none;user-select:none}
+.pt-lienzo{position:absolute;inset:0;display:block;width:100%;height:100%;border-radius:var(--pt-radio)}
+.pt-escena::after{content:"";position:absolute;inset:0;z-index:1;border:1px solid var(--pt-line);border-radius:var(--pt-radio);pointer-events:none}
+.pt-toque{position:absolute;inset:0;z-index:3;display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:var(--pt-radio);background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;opacity:1}
+.pt-root[data-pt-fase="juego"] .pt-toque{touch-action:none}
+
+.pt-aviso{position:absolute;z-index:2;inset:0 0 0 32%;display:grid;place-items:center;padding:8px;pointer-events:none;opacity:1;transition:opacity .18s ease-out}
+.pt-root[data-pt-fase="juego"]:not([data-pt-pausa]) .pt-aviso{opacity:0;transition-duration:.12s}
+.pt-aviso-caja{display:grid;justify-items:center;gap:2px;max-width:100%;padding:12px 16px;border:1px solid var(--pt-line);border-radius:var(--pt-radio);background:rgba(8,4,11,.86);text-align:center}
+.pt-aviso-ceja{font-size:12px;font-weight:700;line-height:1.35;letter-spacing:.1em;text-transform:uppercase;color:var(--pt-mute)}
+.pt-aviso-cifra{font-family:var(--pt-display);font-weight:900;font-size:30px;font-size:clamp(26px,9cqi,60px);line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--pt-bone)}
+.pt-aviso-unidad{font-size:12px;font-weight:700;line-height:1.35;letter-spacing:.1em;text-transform:uppercase;color:var(--pt-mute)}
+.pt-aviso-texto{font-family:var(--pt-display);font-weight:800;font-size:15px;font-size:clamp(14px,4.2cqi,24px);line-height:1.15;letter-spacing:-.01em;color:var(--pt-bone);text-wrap:balance}
+.pt-aviso-pista{margin-top:2px;font-size:12px;line-height:1.4;color:var(--pt-mute)}
+.pt-aviso[data-pt-tono="gana"] .pt-aviso-ceja,
+.pt-aviso[data-pt-tono="gana"] .pt-aviso-cifra{color:var(--pt-mint)}
+.pt-aviso[data-pt-tono="pierde"] .pt-aviso-ceja,
+.pt-aviso[data-pt-tono="pierde"] .pt-aviso-cifra{color:var(--pt-lose)}
+.pt-aviso[data-pt-tono="pierde"] .pt-aviso-texto{color:var(--pt-lose)}
+
+/* ── Cobrar: el único botón primario ── */
+.pt-cobrar{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;min-height:56px;margin:0;padding:8px 20px;
+  border:1px solid var(--pt-gold);border-radius:999px;
+  background:var(--pt-gold);color:var(--pt-on-gold);
+  font-family:var(--pt-mono);font-size:13px;font-weight:700;line-height:1.25;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  opacity:1;transition:transform .15s ease-out,opacity .15s ease-out;
+}
+.pt-cobrar:active:not(:disabled){transform:scale(.98)}
+.pt-cobrar:disabled{border-color:var(--pt-line-ctl);background:transparent;color:var(--pt-mute);cursor:not-allowed;opacity:1}
+.pt-tecla{display:none;min-width:24px;padding:3px 6px;border:1px solid currentColor;border-radius:6px;font-family:var(--pt-mono);font-size:12px;font-weight:700;line-height:1;letter-spacing:0;text-align:center}
+@media (hover:hover) and (pointer:fine){
+  .pt-cobrar:not(:disabled) .pt-tecla{display:inline-block}
+}
+.pt-estado{margin:0;min-height:3.1em;font-size:15px;line-height:1.55;color:var(--pt-mute)}
+.pt-estado[data-pt-tono="gana"]{color:var(--pt-mint)}
+.pt-estado[data-pt-tono="pierde"]{color:var(--pt-lose)}
+
+/* ── Rango e historial ── */
+.pt-bloque{display:grid;gap:6px;min-width:0}
+.pt-rango{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0}
+.pt-sello{display:inline-flex;flex:none;align-items:center;min-height:28px;padding:0 18px;border:1px solid var(--pt-mint);border-radius:999px;color:var(--pt-mint);font-family:var(--pt-mono);font-size:12px;font-weight:700;line-height:1;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.pt-sello[data-pt-vacio]{border-color:var(--pt-line-ctl);color:var(--pt-mute)}
+.pt-nota{margin:0;font-size:14px;line-height:1.55;color:var(--pt-dim)}
+.pt-hist{display:flex;flex-wrap:wrap;gap:6px;min-height:28px;margin:0;padding:0;list-style:none}
+.pt-chip{display:inline-flex;align-items:center;min-height:28px;padding:0 12px;border:1px solid var(--pt-line-ctl);border-radius:999px;color:var(--pt-mute);font-family:var(--pt-mono);font-size:12px;font-weight:700;line-height:1;letter-spacing:.06em;text-transform:uppercase;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pt-chip--gana{border-color:var(--pt-mint);color:var(--pt-mint)}
+.pt-chip--pierde{border-color:var(--pt-lose);color:var(--pt-lose)}
+
+/* ── Huella de la ruta ── */
+.pt-ruta{display:grid;gap:8px;min-width:0;padding:14px 16px;background:var(--pt-deck);border:1px solid var(--pt-line);border-radius:var(--pt-radio)}
+.pt-huella{margin:0}
+.pt-codigo{font-family:var(--pt-mono);font-size:15px;font-weight:700;letter-spacing:.06em;color:var(--pt-bone);overflow-wrap:anywhere;word-break:break-all}
+.pt-anterior{display:grid;gap:6px;padding-top:12px;border-top:1px solid var(--pt-line)}
+.pt-par{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:0}
+.pt-par .pt-codigo{font-size:13px;font-weight:400;letter-spacing:.02em;color:var(--pt-mute)}
+.pt-fila-verif{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:4px}
+.pt-verif{margin:0;font-size:14px;line-height:1.5;color:var(--pt-mute)}
+.pt-verif[data-pt-tono="gana"]{color:var(--pt-mint)}
+.pt-verif[data-pt-tono="pierde"]{color:var(--pt-lose)}
+
+/* ── Pie: las reglas de la apuesta, dichas completas ── */
+.pt-pie{display:grid;gap:6px;min-width:0}
+.pt-pie .pt-nota{max-width:64ch}
+
+/* ── Escritorio: escena a la izquierda, mando a la derecha ── */
+@container pt (min-width: 900px){
+  .pt-marco{
+    grid-template-columns:minmax(0,1fr) 336px;
+    grid-template-rows:auto auto auto 1fr auto auto;
+    grid-template-areas:
+      "cab    cab"
+      "campo  previo"
+      "campo  accion"
+      "campo  extra"
+      "ruta   extra"
+      "pie    pie";
+    column-gap:24px;
+  }
+  .pt-cab{grid-area:cab}
+  .pt-previo{grid-area:previo}
+  .pt-campo{grid-area:campo}
+  .pt-accion{grid-area:accion}
+  .pt-extra{grid-area:extra;align-content:start}
+  .pt-ruta{grid-area:ruta}
+  .pt-pie{grid-area:pie}
+  .pt-estado{min-height:4.65em}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .pt-opcion,
+  .pt-boton,
+  .pt-cobrar,
+  .pt-aviso{transition:none}
+  .pt-pulso{animation:none}
+  .pt-opcion:active:not(:disabled),
+  .pt-boton:active:not(:disabled),
+  .pt-cobrar:active:not(:disabled){transform:none}
+}
+
+
+/* ── escritorio ── */
+@media (min-width:760px){
+  .top-in,.tabs,.mesa,.pie{width:min(1140px,100% - 48px)}
+  .cab{display:block;position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line);background:var(--ink)}
+  .top-in{display:flex;align-items:center;gap:12px;padding:12px 0}
+  .top,.top-acc{display:contents}
+  .marca{gap:10px;font-size:22px}
+  .marca-iso{width:36px;height:36px}
+  .top-acc{display:contents}
+  .top-acc .tb-sello{order:1;margin-right:0}
+  .top .tb-saldo{order:2;min-height:48px;margin-left:0;padding:11px 18px;gap:10px}
+  .top .tb-saldo__monto{font-size:20px}
+  .top-acc .tb-btn{order:3}
+  .solo-ancho{display:inline}
+  .tabs{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:24px}
+  .mesa{margin-top:20px;scroll-margin-top:100px}
+  .mesa--pano{padding:28px 24px 32px}
+  .fila-ctrl>.tb-btn{flex:0 0 auto}
+  .tablero{grid-template-columns:44px repeat(12,minmax(0,1fr)) 52px}
+  .celda.ext{flex-direction:row}
+  .evento>span:last-child{flex:1 1 0;min-width:0}
+}
+@media (min-width:820px){
+  .vs,.club-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tiers{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (min-width:900px){.top-sub{display:block}}
+@media (min-width:1100px){.rul{grid-template-columns:380px minmax(0,1fr);gap:24px}}
+@media (prefers-reduced-motion:reduce){
+  .cj{animation:none}
+  .top .tb-saldo__monto{transition:none}
+}
+</style>
+</head>
+<body>
+<style>
+.beta-bar{position:sticky;top:0;z-index:50;background:#e8cf7a;color:#1a1202;font:700 12px/1.35 "JetBrains Mono",ui-monospace,monospace;text-align:center;padding:8px 12px}
+.beta-bar a{color:inherit}
+#mesa-club,#mesa-cajero{display:none!important}
+.gate{position:fixed;inset:0;z-index:100;background:rgba(8,4,11,.96);display:flex;align-items:center;justify-content:center;padding:16px}
+.gate-card{max-width:440px;width:100%;background:#170c1d;border:1px solid #3a2443;border-radius:14px;padding:24px;color:#f4ecf7;font:400 15px/1.6 "JetBrains Mono",ui-monospace,monospace}
+.gate-card h2{font:900 22px/1.2 "Unbounded","Arial Black",sans-serif;margin:0 0 12px}
+.gate-card ul{margin:12px 0 18px;padding-left:18px}
+.gate-btns{display:flex;flex-direction:column;gap:10px}
+.gate-btns button,.gate-btns a{min-height:48px;border-radius:999px;font:800 14px/1 "Unbounded","Arial Black",sans-serif;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0}
+.gate-si{background:#e8cf7a;color:#1a1202}
+.gate-no{background:transparent;color:#f4ecf7;border:1px solid #7d6789!important}
+</style>
+<div class="beta-bar" role="note">BETA · Créditos de juego sin valor monetario · Sin premios · Sin pagos · Solo 18+ · <a href="../">← TRIBE LAB</a></div>
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-h">
+  <div class="gate-card">
+    <h2 id="gate-h">¿Tienes 18 años o más?</h2>
+    <p>TribeBet es una beta de juegos de casino para mayores de edad. Antes de entrar:</p>
+    <ul>
+      <li>Se juega con <b>créditos de juego sin valor monetario</b>.</li>
+      <li>No se compran créditos, no hay premios y no se retira nada.</li>
+      <li>Es una versión de prueba: puede cambiar o fallar.</li>
+    </ul>
+    <div class="gate-btns">
+      <button class="gate-si" id="gate-si" type="button">Sí, tengo 18 o más</button>
+      <a class="gate-no" href="../">No, volver a TRIBE LAB</a>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var g=document.getElementById('gate'), ok=false;
+  try{ ok=sessionStorage.getItem('tribebet-18')==='si'; }catch(e){}
+  if(ok){ g.remove(); return; }
+  document.documentElement.style.overflow='hidden';
+  document.getElementById('gate-si').addEventListener('click',function(){
+    try{ sessionStorage.setItem('tribebet-18','si'); }catch(e){}
+    document.documentElement.style.overflow=''; g.remove();
+  });
+  document.getElementById('gate-si').focus();
+})();
+</script>
+<div class="cab" role="banner">
+  <div class="top-in">
+    <div class="top">
+      <div class="marca-caja">
+        <h1 class="marca"><svg class="marca-iso" viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="27" fill="none" stroke="#e8cf7a" stroke-width="6" stroke-dasharray="10.6 10.6" transform="rotate(-11.25 32 32)"/><circle cx="32" cy="32" r="21.5" fill="#170c1d" stroke="#e8cf7a" stroke-width="1.5"/><path d="M18 19h28v7H36.5l-1.2 21h-6.6L27.5 26H18z" fill="#f4ecf7"/><rect x="21" y="30" width="4.6" height="4.6" fill="#e8cf7a"/><rect x="38.4" y="30" width="4.6" height="4.6" fill="#e8cf7a"/><rect x="28.6" y="41" width="6.8" height="1.6" fill="#170c1d"/><rect x="28.9" y="36" width="6.2" height="1.6" fill="#170c1d"/></svg><span>TRIBE<b>BET</b></span></h1>
+        <p class="top-sub">Mesas · demo jugable</p>
+      </div>
+      <div class="tb-saldo"><span class="tb-saldo__label">Créditos</span><b class="tb-saldo__monto" id="saldo">1,000</b></div>
+    </div>
+    <div class="top-acc">
+      <span class="tb-sello">Demo · 18+</span>
+      <button class="tb-btn tb-btn--compacto" id="btn-recarga" type="button" aria-label="Reiniciar saldo" title="Vuelve el saldo de práctica a 1,000 créditos">Reiniciar<span class="solo-ancho">saldo</span></button>
+    </div>
+  </div>
+</div>
+
+<main id="contenido">
+<div class="tabs" id="tabs" role="tablist" aria-label="Juegos y secciones">
+  <button class="tab act" id="tab-pantera" role="tab" type="button" aria-selected="true" aria-controls="mesa-pantera" tabindex="0">Pantera</button>
+  <button class="tab" id="tab-poker" role="tab" type="button" aria-selected="false" aria-controls="mesa-poker" tabindex="-1">Póker</button>
+  <button class="tab" id="tab-bj" role="tab" type="button" aria-selected="false" aria-controls="mesa-bj" tabindex="-1">Blackjack</button>
+  <button class="tab" id="tab-rul" role="tab" type="button" aria-selected="false" aria-controls="mesa-rul" tabindex="-1">Ruleta</button>
+</div>
+
+<!-- ═══ PANTERA ═══ -->
+<div class="mesa" id="mesa-pantera" role="tabpanel" aria-labelledby="tab-pantera">
+<div class="pt-root" id="pt-root" role="region" aria-labelledby="pt-titulo" data-pt-modo="practica" data-pt-fase="reposo">
+  <div class="pt-marco">
+
+    <header class="pt-cab">
+      <p class="pt-ceja">Juego insignia</p>
+      <h2 class="pt-titulo" id="pt-titulo">Pantera</h2>
+      <p class="pt-lema">Cruza la selva de noche saltando entre tótems. Un toque, un salto.</p>
+      <p class="pt-aviso-legal">
+        <span class="pt-sello">18+</span>
+        <span class="pt-reglas">Práctica con créditos de demo. Sin dinero real.</span>
+      </p>
+    </header>
+
+    <div class="pt-previo">
+      <div class="pt-grupo" role="group" aria-labelledby="pt-l-modo">
+        <span class="pt-label" id="pt-l-modo">Modo</span>
+        <div class="pt-segmento">
+          <button type="button" class="pt-opcion" data-pt-modo-btn="practica" aria-pressed="true">
+            <svg class="pt-marca" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+            <span>Práctica</span>
+          </button>
+          <button type="button" class="pt-opcion" data-pt-modo-btn="caceria" aria-pressed="false">
+            <svg class="pt-marca" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+            <span>Cacería</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-grupo" role="group" aria-labelledby="pt-l-apuesta" data-pt="apuestas" hidden>
+        <div class="pt-fila-label">
+          <span class="pt-label" id="pt-l-apuesta">Apuesta en créditos</span>
+          <span class="pt-label pt-saldo">Saldo <b class="pt-saldo-n" data-pt="saldo">0</b></span>
+        </div>
+        <div class="pt-fichas">
+          <button type="button" class="pt-opcion pt-opcion--num" data-pt-apuesta="10" aria-pressed="true">
+            <svg class="pt-marca" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+            <span>10</span>
+          </button>
+          <button type="button" class="pt-opcion pt-opcion--num" data-pt-apuesta="25" aria-pressed="false">
+            <svg class="pt-marca" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+            <span>25</span>
+          </button>
+          <button type="button" class="pt-opcion pt-opcion--num" data-pt-apuesta="50" aria-pressed="false">
+            <svg class="pt-marca" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+            <span>50</span>
+          </button>
+          <button type="button" class="pt-opcion pt-opcion--num" data-pt-apuesta="100" aria-pressed="false">
+            <svg class="pt-marca" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 6.4l2.6 2.6L10 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+            <span>100</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-campo">
+      <dl class="pt-hud">
+        <div class="pt-dato">
+          <dt class="pt-label">Tótems</dt>
+          <dd class="pt-cifra" data-pt="totems">0</dd>
+        </div>
+        <div class="pt-dato pt-dato--mult" data-pt="dato-mult" hidden>
+          <dt class="pt-label">Multiplicador</dt>
+          <dd class="pt-cifra pt-cifra--oro" data-pt="mult" data-pt-cero>×0.00</dd>
+        </div>
+        <div class="pt-dato">
+          <dt class="pt-label">Mejor<span class="pt-vh"> marca</span></dt>
+          <dd class="pt-cifra" data-pt="mejor">0</dd>
+        </div>
+      </dl>
+
+      <div class="pt-escena" data-pt="escena">
+        <canvas class="pt-lienzo" data-pt="lienzo" width="960" height="540" aria-hidden="true"></canvas>
+        <div class="pt-aviso" data-pt="aviso" aria-hidden="true">
+          <div class="pt-aviso-caja">
+            <span class="pt-aviso-ceja" data-pt="aviso-ceja" hidden></span>
+            <span class="pt-aviso-cifra" data-pt="aviso-cifra" hidden></span>
+            <span class="pt-aviso-unidad" data-pt="aviso-unidad" hidden></span>
+            <span class="pt-aviso-texto" data-pt="aviso-texto">Toca para saltar</span>
+            <span class="pt-aviso-pista" data-pt="aviso-pista">Espacio, ↑ o W</span>
+          </div>
+        </div>
+        <button type="button" class="pt-toque" data-pt="toque" aria-label="Empezar: un toque, un salto" aria-describedby="pt-estado"></button>
+      </div>
+    </div>
+
+    <div class="pt-accion">
+      <button type="button" class="pt-cobrar" data-pt="cobrar" disabled hidden>
+        <span data-pt="cobrar-texto">Cobrar</span>
+        <kbd class="pt-tecla" aria-hidden="true">C</kbd>
+      </button>
+      <p class="pt-estado" id="pt-estado" data-pt="estado" role="status" aria-live="polite">Modo práctica: gratis y sin apuesta. Toca la selva o pulsa Espacio.</p>
+    </div>
+
+    <div class="pt-extra">
+      <div class="pt-bloque">
+        <span class="pt-label">Rango</span>
+        <p class="pt-rango">
+          <span class="pt-sello" data-pt="rango">Sin rango</span>
+          <span class="pt-nota" data-pt="rango-sig">Iniciado a los 5 tótems.</span>
+        </p>
+      </div>
+      <div class="pt-bloque">
+        <span class="pt-label" id="pt-l-hist">Últimas corridas</span>
+        <ul class="pt-hist" data-pt="hist" aria-labelledby="pt-l-hist">
+          <li class="pt-nota" data-pt="hist-vacio">Aún no hay corridas.</li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="pt-ruta" data-pt="ruta" aria-labelledby="pt-l-ruta" hidden>
+      <span class="pt-label" id="pt-l-ruta">Huella de la ruta</span>
+      <p class="pt-huella"><code class="pt-codigo" data-pt="huella">············</code></p>
+      <p class="pt-nota" data-pt="ruta-nota">La ruta queda fijada antes de salir. Esta huella son los primeros 12 caracteres del SHA-256 de su semilla.</p>
+      <div class="pt-anterior" data-pt="anterior" hidden>
+        <span class="pt-label">Ruta anterior</span>
+        <p class="pt-par"><span class="pt-nota">Huella</span> <code class="pt-codigo" data-pt="huella-ant"></code></p>
+        <p class="pt-par"><span class="pt-nota">Semilla</span> <code class="pt-codigo" data-pt="semilla-ant"></code></p>
+        <div class="pt-fila-verif">
+          <button type="button" class="pt-boton" data-pt="verificar">Verificar</button>
+          <p class="pt-verif" data-pt="verif-res" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="pt-pie">
+      <span class="pt-label">Reglas de Cacería</span>
+      <p class="pt-nota">Cada tótem cruzado multiplica tu botín ×1.09, con tope ×100. Cobras cuando quieras desde el primer tótem; si fallas el salto antes de cobrar, pierdes la apuesta. Juega por entretenimiento y pon tu límite antes de empezar.</p>
+    </footer>
+
+  </div>
+</div>
+  <p class="nota-juego">Cacería es práctica. Con esta tabla de pagos, quien salta bien gana a la larga: no es un modelo para dinero real. Simulación con un piloto, no con jugadores.</p>
+</div>
+
+<!-- ═══ PÓKER ═══ -->
+<div class="mesa mesa--pano" id="mesa-poker" hidden role="tabpanel" aria-labelledby="tab-poker">
+  <div class="mesa-head">
+    <p class="ceja">Mesa · cartas</p>
+    <h2>Hold'em contra la casa</h2>
+    <p class="regla">Pones el ante y ves tu mano y el flop. Decides: te retiras o apuestas 2× el ante. Showdown directo, paga 1 a 1. Reglas simplificadas. Ventaja de la casa: sin medir todavía en esta demo.</p>
+  </div>
+  <div class="fila-ctrl" id="pk-ctrl-ante">
+    <span class="sub-mono" style="margin:0">Ante</span>
+    <div class="fichas" id="pk-fichas" role="group" aria-label="Valor del ante">
+      <button class="ficha tb-ficha sel" type="button" aria-pressed="true" data-v="10">10</button>
+      <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="25">25</button>
+      <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="50">50</button>
+      <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="100">100</button>
+    </div>
+    <button class="tb-btn tb-btn--primario" type="button" id="pk-repartir">Repartir</button>
+  </div>
+  <div class="fila-ctrl" id="pk-ctrl-decision" hidden>
+    <button class="tb-btn tb-btn--primario" type="button" id="pk-apostar">Apostar 2× ante</button>
+    <button class="tb-btn tb-btn--peligro" type="button" id="pk-retirar">Retirarse</button>
+  </div>
+  <p class="estado" id="pk-estado" aria-live="polite">Elige tu ante y reparte. La casa juega con las mismas cartas comunitarias.</p>
+  <div class="zona">
+    <div class="titulo-zona"><span class="sub-mono" style="margin:0 0 8px">Cartas comunitarias</span></div>
+    <div class="mano" id="pk-board"></div>
+  </div>
+  <div class="vs">
+    <div class="zona">
+      <div class="titulo-zona"><span class="sub-mono" style="margin:0 0 8px">Tu mano</span><span class="puntos" id="pk-tu-nombre"></span></div>
+      <div class="mano" id="pk-tu"></div>
+    </div>
+    <div class="zona">
+      <div class="titulo-zona"><span class="sub-mono" style="margin:0 0 8px">La casa</span><span class="puntos" id="pk-casa-nombre"></span></div>
+      <div class="mano" id="pk-casa"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BLACKJACK ═══ -->
+<div class="mesa mesa--pano" id="mesa-bj" hidden role="tabpanel" aria-labelledby="tab-bj">
+  <div class="mesa-head">
+    <p class="ceja">Mesa · cartas</p>
+    <h2>Blackjack 21</h2>
+    <p class="regla">Zapato de 6 mazos. La casa se planta en 17. El blackjack natural paga 3 a 2. Puedes doblar con 2 cartas; en la demo no hay split. Ventaja de la casa: sin medir todavía en esta demo.</p>
+  </div>
+  <div class="fila-ctrl" id="bj-ctrl-apuesta">
+    <span class="sub-mono" style="margin:0">Apuesta</span>
+    <div class="fichas" id="bj-fichas" role="group" aria-label="Valor de la apuesta">
+      <button class="ficha tb-ficha sel" type="button" aria-pressed="true" data-v="10">10</button>
+      <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="25">25</button>
+      <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="50">50</button>
+      <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="100">100</button>
+    </div>
+    <button class="tb-btn tb-btn--primario" type="button" id="bj-repartir">Repartir</button>
+  </div>
+  <div class="fila-ctrl" id="bj-ctrl-juego" hidden>
+    <button class="tb-btn tb-btn--primario" type="button" id="bj-pedir">Pedir</button>
+    <button class="tb-btn" type="button" id="bj-plantar">Plantarse</button>
+    <button class="tb-btn" type="button" id="bj-doblar">Doblar</button>
+  </div>
+  <p class="estado" id="bj-estado" aria-live="polite">Elige tu apuesta y reparte.</p>
+  <div class="zona">
+    <div class="titulo-zona"><span class="sub-mono" style="margin:0 0 8px">La casa</span><span class="puntos" id="bj-casa-pts"></span></div>
+    <div class="mano" id="bj-casa"></div>
+  </div>
+  <div class="zona">
+    <div class="titulo-zona"><span class="sub-mono" style="margin:0 0 8px">Tu mano</span><span class="puntos" id="bj-tu-pts"></span></div>
+    <div class="mano" id="bj-tu"></div>
+  </div>
+</div>
+
+<!-- ═══ RULETA ═══ -->
+<div class="mesa mesa--pano" id="mesa-rul" hidden role="tabpanel" aria-labelledby="tab-rul">
+  <div class="mesa-head">
+    <p class="ceja">Mesa · rueda</p>
+    <h2>Ruleta europea</h2>
+    <p class="regla">Un solo cero. El pleno paga 35 a 1; docenas y columnas, 2 a 1; suertes sencillas, 1 a 1. Ventaja de la casa: 2.70% (1 casilla de 37).</p>
+  </div>
+  <div class="rul">
+    <div class="rueda-caja">
+      <canvas id="rueda" width="680" height="680" role="img" aria-label="Rueda de ruleta europea con bola animada"></canvas>
+      <div class="hist" id="rl-hist" aria-label="Últimos resultados"></div>
+    </div>
+    <div>
+      <div class="fila-ctrl">
+        <span class="sub-mono" style="margin:0">Ficha</span>
+        <div class="fichas" id="rl-fichas" role="group" aria-label="Valor de la ficha">
+          <button class="ficha tb-ficha sel" type="button" aria-pressed="true" data-v="1">1</button>
+          <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="5">5</button>
+          <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="25">25</button>
+          <button class="ficha tb-ficha" type="button" aria-pressed="false" data-v="100">100</button>
+        </div>
+        <button class="tb-btn tb-btn--primario" type="button" id="rl-girar">Girar</button>
+        <button class="tb-btn" type="button" id="rl-limpiar">Limpiar apuestas</button>
+      </div>
+      <p class="estado" id="rl-estado" aria-live="polite">Toca el tablero para poner fichas y gira.</p>
+      <div class="tablero-scroll"><div class="tablero" id="rl-tablero" role="group" aria-label="Tablero de apuestas"></div></div>
+      <p class="estado" style="margin-top:12px"><span class="sub-mono" style="display:inline;margin:0">En juego:</span> <b class="puntos" id="rl-total">0</b></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CLUB ═══ -->
+
+
+
+
+</main>
+
+<footer class="pie">
+  <p class="nota">TribeBet · Beta · Solo mayores de 18 años. Se juega con créditos de juego sin valor monetario: no se compran, no se cambian por dinero, no hay premios ni retiros. TribeBet hoy no recibe pagos.</p>
+  <p class="nota nota--resp">Juega por entretenimiento y pon tu límite antes de empezar.</p>
+  <p class="nota">El azar de las mesas sale del generador del navegador: sirve para una demo. Reglas simplificadas. <a href="../" style="color:#e8cf7a">← Volver a TRIBE LAB</a></p>
+</footer>
+
+<script>
+/* ═══════════ núcleo compartido ═══════════ */
+const $=id=>document.getElementById(id);
+const fmt=n=>n.toLocaleString('en-US');
+let saldo=1000;
+try{ const g=localStorage.getItem('tribebet-saldo'); if(g!==null&&g!==''&&isFinite(+g)&&+g>=0) saldo=Math.floor(+g); }catch(e){}
+function guardar(){ try{ localStorage.setItem('tribebet-saldo', String(saldo)); }catch(e){} }
+function pintaSaldo(pulso){
+  const el=$('saldo'); el.textContent=fmt(saldo); guardar();
+  if(pulso){ el.classList.remove('pulso'); void el.offsetWidth; el.classList.add('pulso'); setTimeout(()=>el.classList.remove('pulso'),200); }
+}
+function cobra(n){ if(saldo<n) return false; saldo-=n; pintaSaldo(false); return true; }
+function paga(n){ if(n>0){ saldo+=n; pintaSaldo(true); } }
+$('btn-recarga').addEventListener('click',()=>{ saldo=1000; pintaSaldo(true); });
+
+/* barajas */
+const PALOS=['♠','♥','♦','♣'];
+function mazo(){ const d=[]; for(let s=0;s<4;s++) for(let r=2;r<=14;r++) d.push({r,s}); return d; }
+function baraja(d){ for(let i=d.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [d[i],d[j]]=[d[j],d[i]]; } return d; }
+const CARA={11:'J',12:'Q',13:'K',14:'A'};
+function elCarta(c,oculta){
+  const div=document.createElement('div');
+  if(oculta){ div.className='cj dorso'; return div; }
+  div.className='cj'+(c.s===1||c.s===2?' roja':'');
+  div.innerHTML='<span class="cr">'+(CARA[c.r]||c.r)+'</span><span class="cs">'+PALOS[c.s]+'</span>';
+  return div;
+}
+function selectorFichas(contId, cb){
+  const cont=$(contId);
+  cont.addEventListener('click',e=>{
+    const b=e.target.closest('.ficha'); if(!b) return;
+    cont.querySelectorAll('.ficha').forEach(f=>{ f.classList.remove('sel'); f.setAttribute('aria-pressed','false'); });
+    b.classList.add('sel'); b.setAttribute('aria-pressed','true'); cb(+b.dataset.v);
+  });
+}
+
+/* pestañas: clic o Enter abren; flechas izquierda/derecha, Inicio y Fin recorren la fila */
+const TABS=[['tab-pantera','mesa-pantera'],['tab-poker','mesa-poker'],['tab-bj','mesa-bj'],['tab-rul','mesa-rul']];
+let tabPorFlecha=false;
+function abrirTab(t){
+  const par=TABS.find(x=>x[0]===t); if(!par) return;
+  const m=par[1];
+  TABS.forEach(([t2,m2])=>{ const on=t2===t; $(t2).classList.toggle('act',on); $(t2).setAttribute('aria-selected',String(on)); $(t2).tabIndex=on?0:-1; $(m2).hidden=!on; });
+  if(m==='mesa-rul') dibujaRueda();
+  if(window.PanteraGame){
+    PanteraGame.setVisible(m==='mesa-pantera' && !document.hidden);
+    if(m==='mesa-pantera' && !tabPorFlecha) PanteraGame.enfocar();   /* Espacio salta sin hacer clic antes; con flechas el foco se queda en la fila */
+  }
+}
+TABS.forEach(([t])=>{ $(t).addEventListener('click',()=>abrirTab(t)); });
+$('tabs').addEventListener('keydown',e=>{
+  const ids=TABS.map(x=>x[0]), i=ids.indexOf(document.activeElement ? document.activeElement.id : '');
+  if(i<0) return;
+  let j=-1;
+  if(e.key==='ArrowRight') j=(i+1)%ids.length;
+  else if(e.key==='ArrowLeft') j=(i-1+ids.length)%ids.length;
+  else if(e.key==='Home') j=0;
+  else if(e.key==='End') j=ids.length-1;
+  if(j<0) return;
+  e.preventDefault();
+  tabPorFlecha=true; $(ids[j]).focus(); abrirTab(ids[j]); tabPorFlecha=false;
+});
+/* beta pública: sin Cajero ni Club */
+
+/* ═══════════ PÓKER (lógica testeada) ═══════════ */
+function rank5(cs){
+  const rs=cs.map(c=>c.r).sort((a,b)=>b-a);
+  const flush=cs.every(c=>c.s===cs[0].s);
+  const uniq=[...new Set(rs)];
+  let st=0;
+  if(uniq.length===5){
+    if(uniq[0]-uniq[4]===4) st=uniq[0];
+    else if(uniq[0]===14&&uniq[1]===5&&uniq[4]===2) st=5;
+  }
+  const counts={}; rs.forEach(r=>counts[r]=(counts[r]||0)+1);
+  const g=Object.entries(counts).map(([r,c])=>[+r,c]).sort((a,b)=>b[1]-a[1]||b[0]-a[0]);
+  if(flush&&st) return [8,st];
+  if(g[0][1]===4) return [7,g[0][0],g[1][0]];
+  if(g[0][1]===3&&g[1][1]===2) return [6,g[0][0],g[1][0]];
+  if(flush) return [5].concat(rs);
+  if(st) return [4,st];
+  if(g[0][1]===3) return [3,g[0][0]].concat(g.slice(1).map(x=>x[0]));
+  if(g[0][1]===2&&g[1][1]===2) return [2,g[0][0],g[1][0],g[2][0]];
+  if(g[0][1]===2) return [1,g[0][0]].concat(g.slice(1).map(x=>x[0]));
+  return [0].concat(rs);
+}
+function cmpRank(a,b){ const n=Math.max(a.length,b.length); for(let i=0;i<n;i++){ const x=a[i]||0,y=b[i]||0; if(x!==y) return x-y; } return 0; }
+function best7(cs){ let best=null; for(let i=0;i<7;i++)for(let j=i+1;j<7;j++){ const five=[]; for(let k=0;k<7;k++) if(k!==i&&k!==j) five.push(cs[k]); const r=rank5(five); if(!best||cmpRank(r,best)>0) best=r; } return best; }
+const NOMBRE_MANO=["Carta alta","Par","Doble par","Trío","Escalera","Color","Full house","Póker","Escalera de color"];
+
+let pkAnte=10, pk=null;
+selectorFichas('pk-fichas',v=>pkAnte=v);
+function pkPinta(){
+  const board=$('pk-board'), tu=$('pk-tu'), casa=$('pk-casa');
+  board.innerHTML=''; tu.innerHTML=''; casa.innerHTML='';
+  if(!pk) return;
+  pk.board.forEach((c,i)=>{ if(i<pk.abiertas) board.appendChild(elCarta(c)); });
+  pk.tu.forEach(c=>tu.appendChild(elCarta(c)));
+  pk.casa.forEach(c=>casa.appendChild(elCarta(c, !pk.showdown)));
+}
+$('pk-repartir').addEventListener('click',()=>{
+  if(!cobra(pkAnte)){ $('pk-estado').innerHTML='<span class="p">No te alcanza para ese ante.</span> Toca Reiniciar saldo para volver a 1,000 créditos.'; return; }
+  const d=baraja(mazo());
+  pk={ ante:pkAnte, tu:[d.pop(),d.pop()], casa:[d.pop(),d.pop()], board:[d.pop(),d.pop(),d.pop(),d.pop(),d.pop()], abiertas:3, showdown:false };
+  $('pk-tu-nombre').textContent=''; $('pk-casa-nombre').textContent='';
+  $('pk-ctrl-ante').hidden=true; $('pk-ctrl-decision').hidden=false;
+  const puedeApostar = saldo>=pk.ante*2;
+  $('pk-apostar').disabled=!puedeApostar;
+  $('pk-estado').innerHTML='Ante de <b>'+fmt(pk.ante)+'</b> en la mesa. ¿Apuestas <b>'+fmt(pk.ante*2)+'</b> más'+(puedeApostar?'':' <span class="p">(no te alcanza)</span>')+' o te retiras?';
+  pkPinta();
+});
+$('pk-retirar').addEventListener('click',()=>{
+  if(!pk||pk.done) return;
+  pk.showdown=true; pk.abiertas=5; pkPinta();
+  $('pk-estado').innerHTML='Te retiraste. <span class="p">−'+fmt(pk.ante)+'</span> del ante. La casa tenía: '+NOMBRE_MANO[best7(pk.casa.concat(pk.board))[0]]+'.';
+  pkFin();
+});
+$('pk-apostar').addEventListener('click',()=>{
+  if(!pk||pk.done) return;
+  if(!cobra(pk.ante*2)) return;
+  pk.abiertas=5; pk.showdown=true;
+  const rTu=best7(pk.tu.concat(pk.board)), rCasa=best7(pk.casa.concat(pk.board));
+  $('pk-tu-nombre').textContent=NOMBRE_MANO[rTu[0]];
+  $('pk-casa-nombre').textContent=NOMBRE_MANO[rCasa[0]];
+  const total=pk.ante*3, c=cmpRank(rTu,rCasa);
+  if(c>0){ paga(total*2); $('pk-estado').innerHTML='<span class="g">Ganaste +'+fmt(total)+'</span> — tu '+NOMBRE_MANO[rTu[0]]+' vence a '+NOMBRE_MANO[rCasa[0]]+' de la casa.'; }
+  else if(c<0){ $('pk-estado').innerHTML='<span class="p">Perdiste −'+fmt(total)+'</span> — la casa tenía '+NOMBRE_MANO[rCasa[0]]+' contra tu '+NOMBRE_MANO[rTu[0]]+'.'; }
+  else { paga(total); $('pk-estado').innerHTML='<b>Empate.</b> Recuperas tus '+fmt(total)+' — mismo juego: '+NOMBRE_MANO[rTu[0]]+'.'; }
+  pkPinta(); pkFin();
+});
+function pkFin(){ if(pk) pk.done=true; $('pk-ctrl-decision').hidden=true; $('pk-ctrl-ante').hidden=false; }
+
+/* ═══════════ BLACKJACK ═══════════ */
+function bjVal(cards){
+  let t=0,aces=0;
+  for(const c of cards){ if(c.r>=11&&c.r<=13) t+=10; else if(c.r===14){t+=11;aces++;} else t+=c.r; }
+  while(t>21&&aces>0){t-=10;aces--;}
+  return {total:t, soft:aces>0};
+}
+let zapato=[], bjApuesta=10, bj=null;
+function robar(){ if(zapato.length<1){ zapato=baraja([].concat(mazo(),mazo(),mazo(),mazo(),mazo(),mazo())); } return zapato.pop(); }
+selectorFichas('bj-fichas',v=>bjApuesta=v);
+function bjPinta(final){
+  const tu=$('bj-tu'), casa=$('bj-casa'); tu.innerHTML=''; casa.innerHTML='';
+  if(!bj) return;
+  bj.tu.forEach(c=>tu.appendChild(elCarta(c)));
+  bj.casa.forEach((c,i)=>casa.appendChild(elCarta(c, i===1&&!bj.revela)));
+  const vt=bjVal(bj.tu);
+  $('bj-tu-pts').textContent=vt.total+(vt.soft&&vt.total<=21?' (blanda)':'');
+  if(bj.revela){ const vc=bjVal(bj.casa); $('bj-casa-pts').textContent=vc.total; }
+  else $('bj-casa-pts').textContent=bjVal([bj.casa[0]]).total+' + ?';
+}
+$('bj-repartir').addEventListener('click',()=>{
+  if(zapato.length<60){ zapato=baraja([].concat(mazo(),mazo(),mazo(),mazo(),mazo(),mazo())); }
+  if(!cobra(bjApuesta)){ $('bj-estado').innerHTML='<span class="p">No te alcanza para esa apuesta.</span> Toca Reiniciar saldo para volver a 1,000 créditos.'; return; }
+  bj={ apuesta:bjApuesta, tu:[robar(),robar()], casa:[robar(),robar()], revela:false, doblada:false };
+  $('bj-ctrl-apuesta').hidden=true; $('bj-ctrl-juego').hidden=false;
+  $('bj-doblar').disabled = saldo<bj.apuesta;
+  const vt=bjVal(bj.tu), vc=bjVal(bj.casa);
+  if(vt.total===21||vc.total===21){ bj.revela=true; bjPinta();
+    if(vt.total===21&&vc.total===21){ paga(bj.apuesta); $('bj-estado').innerHTML='<b>Doble blackjack.</b> Empate: recuperas tu apuesta.'; }
+    else if(vt.total===21){ paga(Math.floor(bj.apuesta*2.5)); $('bj-estado').innerHTML='<span class="g">¡Blackjack! +'+fmt(Math.floor(bj.apuesta*1.5))+'</span> (paga 3:2).'; }
+    else { $('bj-estado').innerHTML='<span class="p">La casa tiene blackjack. −'+fmt(bj.apuesta)+'</span>'; }
+    bjFin(); return;
+  }
+  $('bj-estado').innerHTML='Apuesta de <b>'+fmt(bj.apuesta)+'</b> en la mesa. ¿Pides, te plantas o doblas?';
+  bjPinta();
+});
+$('bj-pedir').addEventListener('click',()=>{
+  if(!bj||bj.done) return;
+  bj.tu.push(robar()); $('bj-doblar').disabled=true; bjPinta();
+  const v=bjVal(bj.tu);
+  if(v.total>21){ bj.revela=true; bjPinta(); $('bj-estado').innerHTML='<span class="p">Te pasaste con '+v.total+'. −'+fmt(bj.apuesta)+'</span>'; bjFin(); }
+  else if(v.total===21){ bjPlanta(); }
+});
+$('bj-doblar').addEventListener('click',()=>{
+  if(!bj||bj.done||bj.tu.length!==2) return;
+  if(!cobra(bj.apuesta)) return;
+  bj.apuesta*=2; bj.doblada=true;
+  bj.tu.push(robar()); bjPinta();
+  const v=bjVal(bj.tu);
+  if(v.total>21){ bj.revela=true; bjPinta(); $('bj-estado').innerHTML='<span class="p">Doblaste y te pasaste con '+v.total+'. −'+fmt(bj.apuesta)+'</span>'; bjFin(); }
+  else bjPlanta();
+});
+$('bj-plantar').addEventListener('click',bjPlanta);
+function bjPlanta(){
+  if(!bj||bj.done) return;
+  bj.revela=true;
+  while(bjVal(bj.casa).total<17) bj.casa.push(robar());
+  bjPinta();
+  const vt=bjVal(bj.tu).total, vc=bjVal(bj.casa).total, a=bj.apuesta;
+  if(vc>21){ paga(a*2); $('bj-estado').innerHTML='<span class="g">La casa se pasó con '+vc+'. Ganas +'+fmt(a)+'</span>'; }
+  else if(vt>vc){ paga(a*2); $('bj-estado').innerHTML='<span class="g">'+vt+' contra '+vc+'. Ganas +'+fmt(a)+'</span>'; }
+  else if(vt<vc){ $('bj-estado').innerHTML='<span class="p">'+vt+' contra '+vc+'. Pierdes −'+fmt(a)+'</span>'; }
+  else { paga(a); $('bj-estado').innerHTML='<b>Empate a '+vt+'.</b> Recuperas tu apuesta.'; }
+  bjFin();
+}
+function bjFin(){ if(bj) bj.done=true; $('bj-ctrl-juego').hidden=true; $('bj-ctrl-apuesta').hidden=false; }
+/* ═══════════ RULETA ═══════════ */
+const ORDEN_RUEDA=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+const ROJOS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+function ganaApuesta(tipo,n,res){
+  if(res===0) return tipo==='num'&&n===0;
+  switch(tipo){
+    case 'num': return n===res;
+    case 'rojo': return ROJOS.has(res);
+    case 'negro': return !ROJOS.has(res);
+    case 'par': return res%2===0;
+    case 'impar': return res%2===1;
+    case 'bajo': return res>=1&&res<=18;
+    case 'alto': return res>=19&&res<=36;
+    case 'd1': return res>=1&&res<=12;
+    case 'd2': return res>=13&&res<=24;
+    case 'd3': return res>=25&&res<=36;
+    case 'c1': return res%3===1;
+    case 'c2': return res%3===2;
+    case 'c3': return res%3===0;
+  }
+  return false;
+}
+function pagoApuesta(tipo){
+  if(tipo==='num') return 36;
+  if(tipo==='d1'||tipo==='d2'||tipo==='d3'||tipo==='c1'||tipo==='c2'||tipo==='c3') return 3;
+  return 2;
+}
+
+let rlFicha=1, rlGirando=false;
+const rlBets=new Map(); // key -> monto
+selectorFichas('rl-fichas',v=>rlFicha=v);
+
+/* tablero */
+const tb=$('rl-tablero');
+function mkCelda(html,cls,key,style){
+  const b=document.createElement('button');
+  b.className='celda '+cls; b.innerHTML=html; b.dataset.key=key;
+  if(style) b.setAttribute('style',style);
+  tb.appendChild(b); return b;
+}
+mkCelda('0','v','num:0','grid-row:1/4;grid-column:1');
+for(let r=1;r<=3;r++) for(let c=1;c<=12;c++){
+  const n=c*3-(r-1);
+  mkCelda(String(n), ROJOS.has(n)?'r':'', 'num:'+n, 'grid-row:'+r+';grid-column:'+(c+1));
+}
+mkCelda('2:1','ext','c3','grid-row:1;grid-column:14');
+mkCelda('2:1','ext','c2','grid-row:2;grid-column:14');
+mkCelda('2:1','ext','c1','grid-row:3;grid-column:14');
+mkCelda('1ª 12','ext','d1','grid-row:4;grid-column:2/6');
+mkCelda('2ª 12','ext','d2','grid-row:4;grid-column:6/10');
+mkCelda('3ª 12','ext','d3','grid-row:4;grid-column:10/14');
+mkCelda('1–18','ext','bajo','grid-row:5;grid-column:2/4');
+mkCelda('PAR','ext','par','grid-row:5;grid-column:4/6');
+mkCelda('<span class="rombo" style="background:var(--mesa-rojo)"></span><span>ROJO</span>','ext','rojo','grid-row:5;grid-column:6/8');
+mkCelda('<span class="rombo" style="background:var(--mesa-negro);border:1px solid var(--line-ctl)"></span><span>NEGRO</span>','ext','negro','grid-row:5;grid-column:8/10');
+mkCelda('IMPAR','ext','impar','grid-row:5;grid-column:10/12');
+mkCelda('19–36','ext','alto','grid-row:5;grid-column:12/14');
+
+function pintaChip(b){
+  const key=b.dataset.key, monto=rlBets.get(key)||0;
+  let chip=b.querySelector('.chip');
+  if(monto>0){ if(!chip){ chip=document.createElement('span'); chip.className='chip'; b.appendChild(chip); } chip.textContent=fmt(monto); }
+  else if(chip) chip.remove();
+}
+function totalEnJuego(){ let t=0; rlBets.forEach(v=>t+=v); $('rl-total').textContent=fmt(t); return t; }
+tb.addEventListener('click',e=>{
+  const b=e.target.closest('.celda'); if(!b||rlGirando) return;
+  if(!cobra(rlFicha)){ $('rl-estado').innerHTML='<span class="p">No te alcanza esa ficha.</span> Baja el valor o toca Reiniciar saldo.'; return; }
+  rlBets.set(b.dataset.key,(rlBets.get(b.dataset.key)||0)+rlFicha);
+  pintaChip(b); totalEnJuego();
+  $('rl-estado').textContent='Fichas puestas. Puedes seguir apostando o girar.';
+});
+$('rl-limpiar').addEventListener('click',()=>{
+  if(rlGirando) return;
+  let t=0; rlBets.forEach(v=>t+=v);
+  if(t>0) paga(t);
+  rlBets.clear();
+  tb.querySelectorAll('.celda').forEach(pintaChip);
+  totalEnJuego();
+  $('rl-estado').textContent='Apuestas devueltas al saldo.';
+});
+
+/* rueda en canvas */
+const cv=$('rueda'), ctx=cv.getContext('2d');
+const CX=340, CY=340, SECT=Math.PI*2/37;
+const R_OUT=322, R_IN=214, R_TXT=258, R_BALL0=300, R_BALL1=244;
+let thetaW=0, bolaPos=null; // {a,r}
+/* colores del lienzo: se leen de los tokens de la página (--mesa-rojo, --mesa-negro, --mesa-verde, --naipe, --gold, --line-ctl, --deck, --ink-2) */
+const RUL=(()=>{ const cs=getComputedStyle(document.documentElement), t=(n,d)=>(cs.getPropertyValue(n)||'').trim()||d;
+  return { rojo:t('--mesa-rojo','#b3352c'), negro:t('--mesa-negro','#1a1220'), verde:t('--mesa-verde','#1f7a4d'), naipe:t('--naipe','#f4ecf7'),
+           oro:t('--gold','#e8cf7a'), ctl:t('--line-ctl','#7d6789'), deck:t('--deck','#170c1d'), fondo:t('--ink-2','#08040b') }; })();
+function dibujaRueda(){
+  ctx.clearRect(0,0,680,680);
+  ctx.save(); ctx.translate(CX,CY);
+  // aro exterior
+  ctx.beginPath(); ctx.arc(0,0,R_OUT+12,0,Math.PI*2); ctx.fillStyle=RUL.fondo; ctx.fill();
+  ctx.beginPath(); ctx.arc(0,0,R_OUT+11,0,Math.PI*2); ctx.lineWidth=5; ctx.strokeStyle=RUL.oro; ctx.stroke();
+  // casillas
+  for(let i=0;i<37;i++){
+    const n=ORDEN_RUEDA[i];
+    const a0=thetaW+i*SECT-SECT/2-Math.PI/2, a1=a0+SECT;
+    ctx.beginPath(); ctx.arc(0,0,R_OUT,a0,a1); ctx.arc(0,0,R_IN,a1,a0,true); ctx.closePath();
+    ctx.fillStyle = n===0 ? RUL.verde : (ROJOS.has(n) ? RUL.rojo : RUL.negro);
+    ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle=RUL.fondo; ctx.stroke();
+  }
+  // números
+  ctx.fillStyle=RUL.naipe; ctx.font='700 28px "JetBrains Mono", monospace';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(let i=0;i<37;i++){
+    const a=thetaW+i*SECT-Math.PI/2;
+    ctx.save(); ctx.translate(Math.cos(a)*R_TXT, Math.sin(a)*R_TXT); ctx.rotate(a+Math.PI/2);
+    ctx.fillText(String(ORDEN_RUEDA[i]),0,0); ctx.restore();
+  }
+  // cubo central
+  ctx.beginPath(); ctx.arc(0,0,R_IN-6,0,Math.PI*2); ctx.fillStyle=RUL.deck; ctx.fill();
+  ctx.lineWidth=3; ctx.strokeStyle=RUL.ctl; ctx.stroke();
+  for(let k=0;k<4;k++){ // radios dorados
+    const a=thetaW+k*Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(Math.cos(a)*26,Math.sin(a)*26); ctx.lineTo(Math.cos(a)*(R_IN-14),Math.sin(a)*(R_IN-14));
+    ctx.lineWidth=7; ctx.strokeStyle=RUL.ctl; ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(0,0,26,0,Math.PI*2); ctx.fillStyle=RUL.oro; ctx.fill();
+  ctx.beginPath(); ctx.arc(0,0,26,0,Math.PI*2); ctx.lineWidth=2; ctx.strokeStyle=RUL.ctl; ctx.stroke();
+  // bola
+  if(bolaPos){
+    const x=Math.cos(bolaPos.a)*bolaPos.r, y=Math.sin(bolaPos.a)*bolaPos.r;
+    ctx.beginPath(); ctx.arc(x,y,11,0,Math.PI*2); ctx.fillStyle=RUL.naipe; ctx.fill();
+    ctx.beginPath(); ctx.arc(x-3,y-3,4,0,Math.PI*2); ctx.fillStyle=RUL.naipe; ctx.fill();
+  }
+  ctx.restore();
+}
+dibujaRueda();
+
+function colorDe(n){ return n===0?'v':(ROJOS.has(n)?'r':'n'); }
+function pushHist(n){
+  const h=$('rl-hist'), s=document.createElement('span');
+  s.textContent=n; s.className={r:'hr',n:'hn',v:'hv'}[colorDe(n)];
+  h.prepend(s);
+  while(h.children.length>12) h.lastChild.remove();
+}
+function liquidar(res){
+  let apostado=0, credito=0;
+  rlBets.forEach((monto,key)=>{
+    apostado+=monto;
+    const [tipo,nStr]=key.split(':');
+    if(ganaApuesta(tipo, nStr!==undefined?+nStr:null, res)) credito+=monto*pagoApuesta(tipo);
+  });
+  paga(credito);
+  const neto=credito-apostado;
+  const nombreColor={r:'rojo',n:'negro',v:'verde'}[colorDe(res)];
+  let msg='Salió <b>'+res+' ('+nombreColor+')</b>. ';
+  if(neto>0) msg+='<span class="g">Ganaste +'+fmt(neto)+'</span> (recuperas '+fmt(credito)+').';
+  else if(neto===0&&credito>0) msg+='<b>Quedaste a mano.</b>';
+  else msg+='<span class="p">Perdiste −'+fmt(apostado-credito)+'</span>'+(credito>0?' (recuperaste '+fmt(credito)+')':'')+'.';
+  $('rl-estado').innerHTML=msg;
+  window.__ultimo={n:res, neto:neto, credito:credito, apostado:apostado};
+  rlBets.clear();
+  tb.querySelectorAll('.celda').forEach(pintaChip);
+  totalEnJuego();
+  pushHist(res);
+}
+$('rl-girar').addEventListener('click',()=>{
+  if(rlGirando) return;
+  if(totalEnJuego()===0){ $('rl-estado').innerHTML='Pon al menos una ficha en el tablero antes de girar.'; return; }
+  rlGirando=true; $('rl-girar').disabled=true; $('rl-limpiar').disabled=true;
+  const k=Math.floor(Math.random()*37), res=ORDEN_RUEDA[k];
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const w0=thetaW, w1=w0+Math.PI*2*3;
+  const bFin=w1+k*SECT-Math.PI/2;
+  const b0=bFin+Math.PI*2*7;
+  const DUR=4600, t0=performance.now();
+  function fin(){
+    thetaW=w1%(Math.PI*2);
+    bolaPos={a:(thetaW+k*SECT-Math.PI/2), r:R_BALL1};
+    dibujaRueda(); liquidar(res);
+    rlGirando=false; $('rl-girar').disabled=false; $('rl-limpiar').disabled=false;
+  }
+  if(reduce){ fin(); return; }
+  $('rl-estado').textContent='La bola está en el aire…';
+  function frame(now){
+    let t=Math.min(1,(now-t0)/DUR);
+    const e=1-Math.pow(1-t,3);
+    thetaW=w0+(w1-w0)*e;
+    const a=b0+(bFin-b0)*e;
+    const u=Math.max(0,Math.min(1,(t-0.5)/0.5));
+    const r=R_BALL0-(R_BALL0-R_BALL1)*(u*u*(3-2*u));
+    bolaPos={a:a,r:r};
+    dibujaRueda();
+    if(t<1) requestAnimationFrame(frame); else fin();
+  }
+  requestAnimationFrame(frame);
+});
+
+/* beta pública: Club quitado */
+/* beta pública: Cajero quitado (TribeBet no recibe pagos) */
+/* ═══════════ PANTERA (módulo) ═══════════ */
+/*!
+ * PANTERA — juego insignia de TribeBet.
+ * Script clásico, sin dependencias y sin red. Expone window.PanteraGame.
+ * En Node, module.exports entrega solo el núcleo puro (simulación + contabilidad).
+ *
+ * La mecánica (un toque = un impulso, gravedad, huecos) es de dominio común.
+ * Todo el arte, los nombres y la interfaz son originales del mundo TribeBet.
+ *
+ * Uso en la página anfitriona (con pantera.css y el marcado de pantera.panel.html ya puestos):
+ *
+ *   PanteraGame.mount({
+ *     root,          // el #pt-root del panel
+ *     cobra(n),      // descuenta n créditos; devuelve false si no alcanza el saldo
+ *     paga(n),       // acredita n créditos
+ *     getSaldo(),    // saldo actual
+ *     fmt(n),        // 1000 → "1,000"
+ *     onRun(r)       // opcional: {modo, totems, apuesta, mult, pago, cobrado, semilla} + {huella, pasos, toques, causa}
+ *   });
+ *   PanteraGame.setVisible(bool);   // al mostrar u ocultar la pestaña del juego
+ *   PanteraGame.enfocar();          // opcional: deja el foco en la escena para jugar con Espacio de inmediato
+ *
+ * Servidor: PanteraGame.sim.repetir(r.semilla, r.toques, r.pasos) re-simula la corrida y dice
+ * cuántos tótems se cruzaron y si la pantera seguía viva en el paso del cobro.
+ */
+(function (raiz) {
+  'use strict';
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 1. NÚCLEO PURO
+   *    Determinista: solo usa + − × ÷, comparaciones y Math.imul/floor/round/min/max.
+   *    Nada de Math.sin/pow/random aquí: misma semilla + mismos toques dan
+   *    el mismo resultado en cualquier motor JS (navegador o servidor).
+   * ══════════════════════════════════════════════════════════════════════ */
+
+  var C = {
+    ANCHO: 960,            // lienzo lógico 16:9
+    ALTO: 540,
+    HZ: 120,               // pasos de simulación por segundo
+    DT: 1 / 120,
+
+    PANTERA_X: 240,        // la pantera no avanza: el mundo viene hacia ella
+    Y_INICIAL: 250,
+    GRAVEDAD: 1500,        // px/s²
+    SALTO: -470,           // px/s. El toque fija la velocidad (reemplaza, no suma)
+    CAIDA_MAX: 720,        // px/s
+    SUELO: 480,            // y del suelo: tocarlo termina la corrida
+    CAJA_ANCHO: 36,        // caja de choque, más pequeña que el dibujo
+    CAJA_ALTO: 18,
+
+    VEL_INICIAL: 210,      // px/s del mundo
+    VEL_POR_TOTEM: 2.2,
+    VEL_MAX: 300,
+
+    TOTEM_ANCHO: 78,
+    TOTEM_SEPARACION: 330, // de borde izquierdo a borde izquierdo
+    PRIMER_TOTEM_X: 760,
+    HUECO_INICIAL: 190,
+    HUECO_POR_TOTEM: 1.6,
+    HUECO_MIN: 140,
+    MARGEN_TECHO: 56,      // el hueco nunca empieza más arriba que esto
+    MARGEN_SUELO: 56,      // ni termina más cerca del suelo que esto
+    DELTA_MAX: 110,        // cambio máximo del centro del hueco entre tótems seguidos
+
+    MULT_BASE_CENT: 109,   // ×1.09 por tótem, en centésimas
+    MULT_TOPE: 100,        // tope ×100
+    APUESTAS: [10, 25, 50, 100],
+    REPETIR_MAX_PASOS: 120 * 60 * 30
+  };
+
+  var RANGOS = [
+    { nombre: 'Iniciado', min: 5 },
+    { nombre: 'Cazador', min: 15 },
+    { nombre: 'Acechador', min: 30 },
+    { nombre: 'Sombra', min: 50 },
+    { nombre: 'Alfa', min: 75 }
+  ];
+
+  /* Semilla de texto → entero de 32 bits (xmur3). */
+  function hashSemilla(texto) {
+    var s = String(texto), h = 1779033703 ^ s.length, i;
+    for (i = 0; i < s.length; i++) {
+      h = Math.imul(h ^ s.charCodeAt(i), 3432918353);
+      h = (h << 13) | (h >>> 19);
+    }
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^ (h >>> 16)) >>> 0;
+  }
+
+  /* mulberry32 con el estado guardado en la corrida: devuelve [0, 1). */
+  function azar(e) {
+    var a = (e.rng = (e.rng + 0x6D2B79F5) | 0);
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
+  function huecoDe(k) {
+    return Math.max(C.HUECO_MIN, C.HUECO_INICIAL - C.HUECO_POR_TOTEM * k);
+  }
+
+  function velocidadCon(cruzados) {
+    return Math.min(C.VEL_MAX, C.VEL_INICIAL + C.VEL_POR_TOTEM * cruzados);
+  }
+
+  /* La ruta depende solo de la semilla: ni de los toques ni del reloj. */
+  function nuevoTotem(e) {
+    var k = e.generados;
+    var hueco = huecoDe(k);
+    var min = C.MARGEN_TECHO + hueco / 2;
+    var max = C.SUELO - C.MARGEN_SUELO - hueco / 2;
+    var a = Math.max(min, e.cAnterior - C.DELTA_MAX);
+    var b = Math.min(max, e.cAnterior + C.DELTA_MAX);
+    var cy = Math.round(a + azar(e) * (b - a));
+    e.cAnterior = cy;
+    e.generados = k + 1;
+    return { k: k, x: C.PRIMER_TOTEM_X + k * C.TOTEM_SEPARACION, cy: cy, hueco: hueco };
+  }
+
+  function generar(e) {
+    var ultimo = e.totems.length ? e.totems[e.totems.length - 1] : null;
+    while (!ultimo || ultimo.x - e.dist < C.ANCHO + C.TOTEM_SEPARACION) {
+      ultimo = nuevoTotem(e);
+      e.totems.push(ultimo);
+    }
+    // Los que ya salieron por la izquierda no se necesitan más.
+    while (e.totems.length && e.totems[0].x + C.TOTEM_ANCHO - e.dist < -80) e.totems.shift();
+  }
+
+  function crearEstado(semilla) {
+    var s = String(semilla);
+    var e = {
+      semilla: s,
+      rng: hashSemilla(s) | 0,
+      t: 0,                 // pasos simulados
+      y: C.Y_INICIAL,       // centro de la caja de choque
+      vy: 0,
+      dist: 0,              // distancia recorrida por el mundo
+      vel: C.VEL_INICIAL,
+      cruzados: 0,
+      vivo: true,
+      causa: null,          // 'suelo' | 'totem-arriba' | 'totem-abajo'
+      totemCausa: -1,
+      totems: [],
+      generados: 0,
+      cAnterior: C.Y_INICIAL,
+      toques: []            // pasos en los que hubo salto: la partida completa
+    };
+    generar(e);
+    return e;
+  }
+
+  function morir(e, causa, k) {
+    e.vivo = false;
+    e.causa = causa;
+    e.totemCausa = k;
+  }
+
+  /* Avanza un paso fijo de 1/120 s. Muta y devuelve el estado. */
+  function paso(e, saltar) {
+    if (!e.vivo) return e;
+    var m = C.CAJA_ALTO / 2, x0 = C.PANTERA_X - C.CAJA_ANCHO / 2, x1 = C.PANTERA_X + C.CAJA_ANCHO / 2;
+    var i, tt, sx, arriba, abajo;
+
+    if (saltar) { e.vy = C.SALTO; e.toques.push(e.t); }
+    e.vy += C.GRAVEDAD * C.DT;
+    if (e.vy > C.CAIDA_MAX) e.vy = C.CAIDA_MAX;
+    e.y += e.vy * C.DT;
+    if (e.y - m < 0) { e.y = m; if (e.vy < 0) e.vy = 0; }   // techo: tope sin muerte
+    e.dist += e.vel * C.DT;
+    e.t += 1;
+
+    if (e.y + m >= C.SUELO) { e.y = C.SUELO - m; morir(e, 'suelo', e.cruzados); return e; }
+
+    for (i = 0; i < e.totems.length; i++) {
+      tt = e.totems[i];
+      sx = tt.x - e.dist;
+      if (sx >= x1) break;                         // este y los siguientes aún no llegan
+      if (sx + C.TOTEM_ANCHO <= x0) {              // la pantera superó su borde derecho
+        if (tt.k >= e.cruzados) { e.cruzados = tt.k + 1; e.vel = velocidadCon(e.cruzados); }
+        continue;
+      }
+      arriba = tt.cy - tt.hueco / 2;
+      abajo = tt.cy + tt.hueco / 2;
+      if (e.y - m < arriba) { morir(e, 'totem-arriba', tt.k); return e; }
+      if (e.y + m > abajo) { morir(e, 'totem-abajo', tt.k); return e; }
+    }
+    generar(e);
+    return e;
+  }
+
+  /* Altura real de un salto en la simulación discreta (≈ 72 px). */
+  var SUBIDA = (function () {
+    var vy = C.SALTO, y = 0, min = 0;
+    while (vy < 0) { vy += C.GRAVEDAD * C.DT; y += vy * C.DT; if (y < min) min = y; }
+    return -min;
+  })();
+
+  var PILOTO_PAUSA_MIN = 18;   // pasos entre dos toques del piloto: 150 ms, unos 6.7 toques por segundo como máximo
+
+  /* Altura (borde inferior de la caja) a la que el piloto vuelve a saltar. */
+  function lineaDeSalto(e, dist, margen) {
+    var x0 = C.PANTERA_X - C.CAJA_ANCHO / 2, i, tt, m;
+    for (i = 0; i < e.totems.length; i++) {
+      tt = e.totems[i];
+      if (tt.x + C.TOTEM_ANCHO - dist > x0) {
+        m = margen >= 0 ? margen : (tt.hueco - C.CAJA_ALTO - SUBIDA) / 2;   // centra el vaivén en el hueco
+        return tt.cy + tt.hueco / 2 - m;
+      }
+    }
+    return C.SUELO - 60;
+  }
+
+  /*
+   * Piloto: decide si saltar en este paso. Regla: salta lo más tarde posible,
+   * justo antes de que la caja baje de la línea del próximo hueco.
+   * opc.anticipo = pasos de previsión (para simular a alguien que reacciona tarde).
+   * opc.pausaMin = pasos mínimos entre dos toques (por defecto 18 = 150 ms).
+   */
+  function piloto(e, opc) {
+    if (!e.vivo) return false;
+    var L = opc && opc.anticipo > 0 ? Math.floor(opc.anticipo) : 1;
+    var margen = opc && opc.margen >= 0 ? opc.margen : -1;
+    var pausa = opc && opc.pausaMin >= 0 ? opc.pausaMin : PILOTO_PAUSA_MIN;
+    var y = e.y, vy = e.vy, avance = e.vel * C.DT, s;
+    if (e.toques.length && e.t - e.toques[e.toques.length - 1] < pausa) return false;   // no toca más rápido que una persona
+    for (s = 1; s <= L; s++) {
+      vy += C.GRAVEDAD * C.DT;
+      if (vy > C.CAIDA_MAX) vy = C.CAIDA_MAX;
+      y += vy * C.DT;
+      if (y + C.CAJA_ALTO / 2 > lineaDeSalto(e, e.dist + avance * s, margen)) return true;
+    }
+    return false;
+  }
+
+  function resumen(e) {
+    return {
+      semilla: e.semilla, totems: e.cruzados, vivo: e.vivo, causa: e.causa, totemCausa: e.totemCausa,
+      pasos: e.t, y: e.y, vy: e.vy, dist: e.dist, vel: e.vel, saltos: e.toques.length
+    };
+  }
+
+  /*
+   * Re-simula una corrida. Base de la validación en servidor:
+   *   repetir(semilla, toques)             → hasta que la pantera cae
+   *   repetir(semilla, toques, pasoFinal)  → hasta ese paso (el momento del cobro)
+   * `toques` = lista creciente de pasos en los que hubo salto.
+   */
+  function repetir(semilla, toques, pasoFinal) {
+    var lista = toques || [], n = lista.length, i, previo = -1, valido = true;
+    for (i = 0; i < n; i++) {
+      if (typeof lista[i] !== 'number' || lista[i] !== Math.floor(lista[i]) || lista[i] <= previo) { valido = false; break; }
+      previo = lista[i];
+    }
+    var e = crearEstado(semilla);
+    var limite = (typeof pasoFinal === 'number' && pasoFinal >= 0) ? Math.floor(pasoFinal) : C.REPETIR_MAX_PASOS;
+    if (limite > C.REPETIR_MAX_PASOS) limite = C.REPETIR_MAX_PASOS;
+    i = 0;
+    if (valido) {
+      while (e.vivo && e.t < limite) {
+        if (i < n && lista[i] === e.t) { paso(e, true); i++; } else paso(e, false);
+      }
+    }
+    var r = resumen(e);
+    r.valido = valido && i === n;      // sobran toques ⇒ la lista no corresponde a esta corrida
+    r.toquesUsados = i;
+    return r;
+  }
+
+  /* Los primeros n tótems de una semilla, sin jugar. */
+  function ruta(semilla, n) {
+    var e = { rng: hashSemilla(String(semilla)) | 0, generados: 0, cAnterior: C.Y_INICIAL }, lista = [], k;
+    for (k = 0; k < n; k++) lista.push(nuevoTotem(e));
+    return lista;
+  }
+
+  function clonar(e) {
+    var c = {}, k;
+    for (k in e) if (Object.prototype.hasOwnProperty.call(e, k)) c[k] = e[k];
+    c.totems = e.totems.map(function (t) { return { k: t.k, x: t.x, cy: t.cy, hueco: t.hueco }; });
+    c.toques = e.toques.slice();
+    return c;
+  }
+
+  /* ── Multiplicador y contabilidad: aritmética entera, sin coma flotante ── */
+
+  /*
+   * m(n) = min(100, floor(100 × 1.09^n) / 100), guardado en centésimas.
+   * 109^n se calcula exacto con dígitos decimales; así floor() no depende
+   * del redondeo de Math.pow de cada motor.
+   */
+  var MULT_CENT = (function () {
+    var tabla = [0], d = [1], tope = C.MULT_TOPE * 100, n, i, lleva, v, corte, val;
+    for (n = 1; n < 400; n++) {
+      lleva = 0;
+      for (i = 0; i < d.length; i++) {
+        v = d[i] * C.MULT_BASE_CENT + lleva;
+        d[i] = v % 10;
+        lleva = (v - d[i]) / 10;
+      }
+      while (lleva > 0) { d.push(lleva % 10); lleva = (lleva - lleva % 10) / 10; }
+      corte = 2 * (n - 1);                       // 109^n / 100^(n−1) = centésimas de 1.09^n
+      val = 0;
+      for (i = d.length - 1; i >= corte && val < tope; i--) val = val * 10 + d[i];
+      if (val >= tope) { tabla.push(tope); break; }
+      tabla.push(val);
+    }
+    return tabla;
+  })();
+
+  function multCent(n) {
+    n = Math.floor(n);
+    if (!(n >= 1)) return 0;
+    return n < MULT_CENT.length ? MULT_CENT[n] : C.MULT_TOPE * 100;
+  }
+
+  function mult(n) { return multCent(n) / 100; }
+
+  function textoMult(n) {
+    var c = multCent(n), ent = (c - c % 100) / 100, dec = c % 100;
+    return '×' + ent + '.' + (dec < 10 ? '0' : '') + dec;
+  }
+
+  /* floor(apuesta × m(n)), con enteros. */
+  function pago(apuesta, n) {
+    var p = Math.floor(apuesta) * multCent(n);
+    return (p - p % 100) / 100;
+  }
+
+  function rango(marca) {
+    var actual = null, siguiente = null, i;
+    for (i = 0; i < RANGOS.length; i++) {
+      if (marca >= RANGOS[i].min) actual = RANGOS[i];
+      else { siguiente = RANGOS[i]; break; }
+    }
+    return { actual: actual, siguiente: siguiente };
+  }
+
+  var sim = {
+    crearEstado: crearEstado,
+    paso: paso,
+    piloto: piloto,
+    repetir: repetir,
+    ruta: ruta,
+    clonar: clonar,
+    resumen: resumen,
+    hashSemilla: hashSemilla,
+    huecoDe: huecoDe,
+    velocidadCon: velocidadCon,
+    SUBIDA: SUBIDA,
+    PILOTO_PAUSA_MIN: PILOTO_PAUSA_MIN
+  };
+
+  var nucleo = {
+    C: C,
+    RANGOS: RANGOS,
+    sim: sim,
+    multCent: multCent,
+    mult: mult,
+    textoMult: textoMult,
+    pago: pago,
+    rango: rango,
+    tablaMult: function () { return MULT_CENT.slice(); }
+  };
+
+  if (typeof module !== 'undefined' && module && module.exports) module.exports = nucleo;
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 2. ARTE: selva de noche dibujada por código (sin imágenes externas)
+   * ══════════════════════════════════════════════════════════════════════ */
+
+  var TOKENS = {
+    jungle: ['--pt-jungle', '#04100b'],
+    bone: ['--pt-bone', '#f4ecf7'],
+    gold: ['--pt-gold', '#e8cf7a'],
+    mag: ['--pt-mag', '#e46bff'],
+    mint: ['--pt-mint', '#3dffc0'],
+    ink2: ['--pt-ink-2', '#08040b']
+  };
+  var FUENTE_CIFRAS = '"Unbounded","Arial Black","Helvetica Neue",Arial,sans-serif';
+  var TAU = Math.PI * 2;
+
+  function hexARgb(hex) {
+    var h = String(hex || '').trim().replace('#', '');
+    if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
+    if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  function tinta(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (a === undefined ? 1 : a) + ')'; }
+  function mezcla(a, b, t) {
+    return [Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), Math.round(a[2] + (b[2] - a[2]) * t)];
+  }
+  function limitar(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+  function leerTokens(root) {
+    var cs = null, t = {}, k, v;
+    try { cs = window.getComputedStyle(root); } catch (err) { cs = null; }
+    for (k in TOKENS) {
+      v = cs ? cs.getPropertyValue(TOKENS[k][0]) : '';
+      t[k] = hexARgb(v) || hexARgb(TOKENS[k][1]);
+    }
+    v = cs ? String(cs.getPropertyValue('--pt-display') || '').trim() : '';
+    t.display = v || FUENTE_CIFRAS;
+    return t;
+  }
+
+  /* Azar solo para el dibujo (hojas, luciérnagas): no toca la simulación. */
+  function crearAzar(semilla) {
+    var a = semilla | 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function crearArte(tok) {
+    var W = C.ANCHO, H = C.ALTO, SUELO = C.SUELO, A = C.TOTEM_ANCHO;
+    var VERDE = [31, 138, 99], NEGRO = [0, 0, 0];
+    var selva = tok.jungle;
+    var col = {
+      cieloAlto: tinta(mezcla(selva, NEGRO, 0.25)),
+      cieloMedio: tinta(mezcla(selva, VERDE, 0.13)),
+      cieloBajo: tinta(mezcla(selva, VERDE, 0.25)),
+      lejos: tinta(mezcla(selva, VERDE, 0.36), 0.42),
+      medio: tinta(mezcla(selva, VERDE, 0.05)),
+      cerca: tinta(mezcla(selva, NEGRO, 0.62)),
+      sueloA: tinta(mezcla(selva, VERDE, 0.11)),
+      sueloB: tinta(mezcla(selva, NEGRO, 0.55)),
+      sueloFilo: tinta(mezcla(mezcla(selva, VERDE, 0.5), tok.bone, 0.12)),
+      pasto: tinta(mezcla(selva, VERDE, 0.2)),
+      piedra: tinta(mezcla(mezcla(selva, VERDE, 0.36), tok.bone, 0.1)),
+      piedraLuz: tinta(mezcla(mezcla(selva, VERDE, 0.42), tok.bone, 0.24)),
+      piedraSombra: tinta(mezcla(selva, VERDE, 0.2)),
+      cabeza: tinta(mezcla(mezcla(selva, VERDE, 0.4), tok.bone, 0.15)),
+      surco: tinta(mezcla(selva, NEGRO, 0.2)),
+      oro: tinta(tok.gold),
+      oroSombra: tinta(mezcla(tok.gold, NEGRO, 0.42)),
+      hueso: tinta(tok.bone),
+      pantera: tinta(mezcla(tok.ink2, NEGRO, 0.45))
+    };
+    var k = 1, kcss = 1, capas = null;
+
+    var luces = (function () {
+      var r = crearAzar(7719), lista = [], i;
+      for (i = 0; i < 22; i++) {
+        lista.push({ x: r() * 1200, y: 64 + r() * 372, f: r() * TAU, v: 0.5 + r(), a: 8 + r() * 14, menta: r() < 0.2, prof: 0.35 + r() * 0.5 });
+      }
+      return lista;
+    })();
+
+    function lienzo(w, h) {
+      var c = document.createElement('canvas');
+      c.width = Math.max(2, Math.round(w));
+      c.height = Math.max(2, Math.round(h));
+      return c;
+    }
+    function contexto(c, f, dy) {
+      var x = c.getContext('2d');
+      x.setTransform(k * f, 0, 0, k * f, 0, -(dy || 0) * k * f);
+      return x;
+    }
+    /* Dibuja la misma forma tres veces para que la tira de 960 px empalme consigo misma. */
+    function empalmar(x, fn) {
+      var dx;
+      for (dx = -W; dx <= W; dx += W) { x.save(); x.translate(dx, 0); fn(); x.restore(); }
+    }
+    function hoja(x, bx, by, largo, ancho, ang) {
+      x.save();
+      x.translate(bx, by);
+      x.rotate(ang);
+      x.beginPath();
+      x.moveTo(0, 0);
+      x.quadraticCurveTo(largo * 0.42, -ancho, largo, 0);
+      x.quadraticCurveTo(largo * 0.42, ancho * 0.5, 0, 0);
+      x.fill();
+      x.restore();
+    }
+
+    function capaCielo() {
+      var c = lienzo(W * k, H * k), x = contexto(c, 1), g, luna = [588, 104];
+      g = x.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, col.cieloAlto);
+      g.addColorStop(0.3, tinta(selva));
+      g.addColorStop(0.68, col.cieloMedio);
+      g.addColorStop(0.9, col.cieloBajo);
+      g.addColorStop(1, col.cieloMedio);
+      x.fillStyle = g;
+      x.fillRect(0, 0, W, H);
+      g = x.createRadialGradient(luna[0], luna[1], 20, luna[0], luna[1], 250);
+      g.addColorStop(0, tinta(tok.bone, 0.16));
+      g.addColorStop(0.35, tinta(tok.bone, 0.05));
+      g.addColorStop(1, tinta(tok.bone, 0));
+      x.fillStyle = g;
+      x.fillRect(0, 0, W, H);
+      x.beginPath();
+      x.arc(luna[0], luna[1], 42, 0, TAU);
+      x.fillStyle = tinta(tok.bone, 0.2);
+      x.fill();
+      x.beginPath();                                   // sombra suave: la luna no es un disco plano
+      x.arc(luna[0] + 13, luna[1] - 9, 36, 0, TAU);
+      x.fillStyle = tinta(tok.bone, 0.07);
+      x.fill();
+      return c;
+    }
+
+    function capaLejos() {
+      var f = 0.5, c = lienzo(W * k * f, H * k * f), x = contexto(c, f), r = crearAzar(4021), i, j, n, cx, cy, rad;
+      x.fillStyle = col.lejos;
+      x.beginPath();
+      for (i = 0; i < 18; i++) {                       // dosel alto
+        cx = i * 56 + r() * 30; cy = -18 + r() * 22; rad = 34 + r() * 26;
+        for (j = -1; j <= 1; j++) { x.moveTo(cx + j * W + rad, cy); x.arc(cx + j * W, cy, rad, 0, TAU); }
+      }
+      for (i = 0; i < 9; i++) {                        // copas lejanas sobre el horizonte
+        cx = i * 108 + r() * 60; cy = 372 + r() * 70; n = 5 + Math.floor(r() * 3);
+        for (n; n > 0; n--) {
+          rad = 30 + r() * 30;
+          var ox = cx + (r() - 0.5) * 90, oy = cy + (r() - 0.5) * 44;
+          for (j = -1; j <= 1; j++) { x.moveTo(ox + j * W + rad, oy); x.arc(ox + j * W, oy, rad, 0, TAU); }
+        }
+      }
+      x.rect(-W, 430, W * 3, 60);
+      x.fill();
+      x.strokeStyle = col.lejos;                       // lianas
+      x.lineCap = 'round';
+      for (i = 0; i < 7; i++) {
+        cx = 40 + i * 136 + r() * 50; n = 70 + r() * 120; rad = (r() - 0.5) * 50;
+        x.lineWidth = 2.2;
+        empalmar(x, function () {
+          x.beginPath();
+          x.moveTo(cx, 6);
+          x.quadraticCurveTo(cx + rad, n * 0.6, cx + rad * 0.4, n);
+          x.stroke();
+        });
+      }
+      return c;
+    }
+
+    function capaMedio() {
+      var f = 0.75, c = lienzo(W * k * f, H * k * f), x = contexto(c, f), r = crearAzar(9133), i, j, n, bx, largo;
+      x.fillStyle = col.medio;
+      for (i = 0; i < 11; i++) {                       // helechos que suben del suelo
+        bx = i * 88 + r() * 50; n = 5 + Math.floor(r() * 3);
+        for (j = 0; j < n; j++) {
+          largo = 58 + r() * 74;
+          (function (bx, largo, ang, ancho) {
+            empalmar(x, function () { hoja(x, bx, SUELO + 8, largo, ancho, ang); });
+          })(bx, largo, -Math.PI / 2 + (j - (n - 1) / 2) * 0.42 + (r() - 0.5) * 0.2, 9 + r() * 9);
+        }
+      }
+      for (i = 0; i < 9; i++) {                        // hojas anchas que cuelgan del dosel
+        bx = 30 + i * 106 + r() * 60; n = 3 + Math.floor(r() * 3);
+        for (j = 0; j < n; j++) {
+          largo = 40 + r() * 52;
+          (function (bx, largo, ang, ancho) {
+            empalmar(x, function () { hoja(x, bx, -6, largo, ancho, ang); });
+          })(bx, largo, Math.PI / 2 + (j - (n - 1) / 2) * 0.5 + (r() - 0.5) * 0.2, 12 + r() * 10);
+        }
+      }
+      return c;
+    }
+
+    function capaBruma() {
+      var f = 0.25, alto = 230, c = lienzo(W * k * f, alto * k * f), x = contexto(c, f), r = crearAzar(551), i, j, cx, cy, rx, g;
+      for (i = 0; i < 9; i++) {
+        cx = r() * W; cy = 60 + r() * 130; rx = 150 + r() * 170;
+        for (j = -1; j <= 1; j++) {
+          x.save();
+          x.translate(cx + j * W, cy);
+          x.scale(1, 0.26);
+          g = x.createRadialGradient(0, 0, 0, 0, 0, rx);
+          g.addColorStop(0, tinta(mezcla(tok.bone, VERDE, 0.5), 0.085));
+          g.addColorStop(1, tinta(mezcla(tok.bone, VERDE, 0.5), 0));
+          x.fillStyle = g;
+          x.beginPath();
+          x.arc(0, 0, rx, 0, TAU);
+          x.fill();
+          x.restore();
+        }
+      }
+      return c;
+    }
+
+    var SUELO_Y0 = SUELO - 16, SUELO_ALTO = H - SUELO_Y0;
+    function capaSuelo() {
+      var c = lienzo(W * k, SUELO_ALTO * k), x = contexto(c, 1, SUELO_Y0), r = crearAzar(3307), i, px, alto, g;
+      g = x.createLinearGradient(0, SUELO, 0, H);
+      g.addColorStop(0, col.sueloA);
+      g.addColorStop(1, col.sueloB);
+      x.fillStyle = g;
+      x.fillRect(0, SUELO, W, H - SUELO);
+      x.fillStyle = col.pasto;
+      for (i = 0; i < 64; i++) {                       // matas
+        px = r() * W; alto = 4 + r() * 11;
+        (function (px, alto, inclina) {
+          empalmar(x, function () {
+            x.beginPath();
+            x.moveTo(px - 3.5, SUELO + 1);
+            x.lineTo(px + inclina, SUELO - alto);
+            x.lineTo(px + 3.5, SUELO + 1);
+            x.fill();
+          });
+        })(px, alto, (r() - 0.5) * 6);
+      }
+      x.fillStyle = col.sueloFilo;                     // filo: la línea que no hay que tocar
+      x.fillRect(0, SUELO, W, Math.max(2, 1.4 / kcss));
+      x.fillStyle = col.sueloB;
+      for (i = 0; i < 16; i++) {                       // piedras
+        px = r() * W; alto = SUELO + 16 + r() * 34;
+        (function (px, py, rx) {
+          empalmar(x, function () { x.beginPath(); x.ellipse(px, py, rx, rx * 0.45, 0, 0, TAU); x.fill(); });
+        })(px, alto, 6 + r() * 14);
+      }
+      return c;
+    }
+
+    var CERCA_Y0 = 430, CERCA_ALTO = H - CERCA_Y0;
+    function capaCerca() {
+      var c = lienzo(W * k, CERCA_ALTO * k), x = contexto(c, 1, CERCA_Y0), r = crearAzar(6011), i, j, n, bx, largo;
+      x.fillStyle = col.cerca;
+      for (i = 0; i < 5; i++) {
+        bx = 60 + i * 190 + r() * 80; n = 4 + Math.floor(r() * 2);
+        for (j = 0; j < n; j++) {
+          largo = 62 + r() * 46;
+          (function (bx, largo, ang, ancho) {
+            empalmar(x, function () { hoja(x, bx, H + 22, largo, ancho, ang); });
+          })(bx, largo, -Math.PI / 2 + (j - (n - 1) / 2) * 0.5 + (r() - 0.5) * 0.16, 15 + r() * 10);
+        }
+      }
+      return c;
+    }
+
+    function capaLuz(c3) {
+      var T = 64, c = document.createElement('canvas'), x, g;
+      c.width = T; c.height = T;
+      x = c.getContext('2d');
+      g = x.createRadialGradient(T / 2, T / 2, 0, T / 2, T / 2, T / 2);
+      g.addColorStop(0, tinta(c3, 0.9));
+      g.addColorStop(0.22, tinta(c3, 0.38));
+      g.addColorStop(1, tinta(c3, 0));
+      x.fillStyle = g;
+      x.fillRect(0, 0, T, T);
+      return c;
+    }
+
+    function preparar(kpx, kc) {
+      k = kpx; kcss = kc;
+      capas = {
+        cielo: capaCielo(), lejos: capaLejos(), medio: capaMedio(), bruma: capaBruma(),
+        suelo: capaSuelo(), cerca: capaCerca(), luzOro: capaLuz(tok.gold), luzMenta: capaLuz(tok.mint)
+      };
+    }
+
+    function mosaico(ctx, img, desplaz, y, alto) {
+      var o = desplaz % W;
+      if (o < 0) o += W;
+      o = Math.round(o * k) / k;
+      ctx.drawImage(img, -o, y, W, alto);
+      ctx.drawImage(img, W - o, y, W, alto);
+    }
+
+    /* ── Tótems tallados ── */
+    var CABEZA = 60, TRAMO = 52, LABIO = 6;
+
+    function cara(ctx, x, y, variante, encendido) {
+      // y = borde superior de la zona de cara (54 px de alto)
+      var ojo = encendido ? col.oro : col.hueso;
+      ctx.fillStyle = col.surco;                       // ceño
+      ctx.fillRect(x + 9, y + 6, A - 18, 4);
+      ctx.fillStyle = col.piedraLuz;                   // nariz
+      ctx.fillRect(x + A / 2 - 4, y + 12, 8, 18);
+      ctx.fillStyle = ojo;
+      if (variante === 0) {
+        ctx.fillRect(x + 13, y + 13, 17, 11);
+        ctx.fillRect(x + A - 30, y + 13, 17, 11);
+        ctx.fillStyle = col.surco;
+        ctx.fillRect(x + 16, y + 15, 6, 7);
+        ctx.fillRect(x + A - 27, y + 15, 6, 7);
+      } else if (variante === 1) {
+        ctx.fillRect(x + 12, y + 16, 19, 6);
+        ctx.fillRect(x + A - 31, y + 16, 19, 6);
+      } else {
+        ctx.beginPath();
+        ctx.arc(x + 21.5, y + 18.5, 7, 0, TAU);
+        ctx.arc(x + A - 21.5, y + 18.5, 7, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = col.surco;
+        ctx.beginPath();
+        ctx.arc(x + 19.5, y + 18.5, 2.8, 0, TAU);
+        ctx.arc(x + A - 23.5, y + 18.5, 2.8, 0, TAU);
+        ctx.fill();
+      }
+      ctx.fillStyle = col.surco;                       // boca
+      if (variante === 1) ctx.fillRect(x + 15, y + 36, A - 30, 9);
+      else ctx.fillRect(x + 21, y + 36, A - 42, 10);
+      ctx.fillStyle = col.hueso;                       // dientes
+      ctx.globalAlpha = 0.82;
+      if (variante === 2) {
+        ctx.fillRect(x + 25, y + 36, 5, 6);
+        ctx.fillRect(x + A - 30, y + 36, 5, 6);
+      } else {
+        ctx.fillRect(x + 25, y + 36, 5, 4);
+        ctx.fillRect(x + 33, y + 36, 5, 4);
+        ctx.fillRect(x + A - 38, y + 36, 5, 4);
+        ctx.fillRect(x + A - 30, y + 36, 5, 4);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function talla(ctx, x, y, motivo) {
+      // y = borde superior de un tramo de 52 px
+      ctx.strokeStyle = col.surco;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'butt';
+      ctx.lineJoin = 'miter';
+      ctx.beginPath();
+      if (motivo === 0) {
+        ctx.moveTo(x + 20, y + 16); ctx.lineTo(x + A / 2, y + 28); ctx.lineTo(x + A - 20, y + 16);
+        ctx.moveTo(x + 20, y + 28); ctx.lineTo(x + A / 2, y + 40); ctx.lineTo(x + A - 20, y + 28);
+      } else if (motivo === 1) {
+        ctx.moveTo(x + A / 2, y + 12); ctx.lineTo(x + A - 22, y + 27); ctx.lineTo(x + A / 2, y + 42); ctx.lineTo(x + 22, y + 27); ctx.closePath();
+      } else {
+        ctx.moveTo(x + 20, y + 18); ctx.lineTo(x + A - 20, y + 18);
+        ctx.moveTo(x + 26, y + 27); ctx.lineTo(x + A - 26, y + 27);
+        ctx.moveTo(x + 20, y + 36); ctx.lineTo(x + A - 20, y + 36);
+      }
+      ctx.stroke();
+    }
+
+    function columna(ctx, x, borde, dir, kt, encendido) {
+      var y0 = dir > 0 ? borde + CABEZA : 0, y1 = dir > 0 ? H : borde - CABEZA, y, n, cy0, caraY;
+      if (y1 > y0) {                                   // fuste
+        ctx.fillStyle = col.piedra;
+        ctx.fillRect(x + 6, y0, A - 12, y1 - y0);
+        ctx.fillStyle = col.piedraLuz;
+        ctx.fillRect(x + 6, y0, 8, y1 - y0);
+        ctx.fillStyle = col.piedraSombra;
+        ctx.fillRect(x + A - 19, y0, 13, y1 - y0);
+        n = 0;
+        if (dir > 0) {
+          for (y = y0; y < y1; y += TRAMO, n++) {
+            if (y + TRAMO <= SUELO + 4) talla(ctx, x, y, (kt + n) % 3);
+            ctx.fillStyle = col.surco; ctx.fillRect(x + 6, y - 1, A - 12, 3);
+            ctx.fillStyle = col.oro; ctx.fillRect(x + 6, y + 2, A - 12, 2.5);
+          }
+        } else {
+          for (y = y1; y > y0; y -= TRAMO, n++) {
+            if (y - TRAMO >= -4) talla(ctx, x, y - TRAMO, (kt + n + 1) % 3);
+            ctx.fillStyle = col.surco; ctx.fillRect(x + 6, y - 2, A - 12, 3);
+            ctx.fillStyle = col.oro; ctx.fillRect(x + 6, y - 4.5, A - 12, 2.5);
+          }
+        }
+      }
+      cy0 = dir > 0 ? borde : borde - CABEZA;          // cabeza: bloque a todo el ancho
+      ctx.fillStyle = col.cabeza;
+      ctx.fillRect(x, cy0, A, CABEZA);
+      ctx.fillStyle = col.piedraLuz;
+      ctx.fillRect(x, cy0, 7, CABEZA);
+      ctx.fillStyle = col.piedraSombra;
+      ctx.fillRect(x + A - 10, cy0, 10, CABEZA);
+      caraY = dir > 0 ? cy0 + LABIO : cy0;
+      cara(ctx, x, caraY, kt % 3, encendido);
+      ctx.fillStyle = col.oro;                         // labio dorado: el borde exacto del hueco
+      ctx.fillRect(x, dir > 0 ? borde : borde - LABIO, A, LABIO);
+      ctx.fillStyle = col.oroSombra;
+      ctx.fillRect(x, dir > 0 ? borde + LABIO : borde - LABIO - 2, A, 2);
+    }
+
+    function totem(ctx, tt, dist, cruzados) {
+      var x = tt.x - dist;
+      if (x > W + 4 || x + A < -4) return;
+      x = Math.round(x * k) / k;
+      columna(ctx, x, tt.cy - tt.hueco / 2, -1, tt.k, tt.k < cruzados);
+      columna(ctx, x, tt.cy + tt.hueco / 2, 1, tt.k, tt.k < cruzados);
+    }
+
+    /* ── La Pantera: silueta negra, ojos dorados, filo magenta ──
+       Dibujo propio por piezas (torso, cola y cuatro patas articuladas).
+       `pose` va de 0 (estirada, subiendo) a 1 (patas hacia abajo, cayendo). */
+    function trazoTorso(ctx) {
+      ctx.beginPath();
+      ctx.moveTo(63.5, -6);                            // nariz
+      ctx.quadraticCurveTo(60, -11.5, 55, -13.5);      // caña del hocico
+      ctx.quadraticCurveTo(52.5, -19.5, 48.5, -20.5);  // frente
+      ctx.quadraticCurveTo(49, -28, 45.5, -28);        // oreja del otro lado, redonda
+      ctx.quadraticCurveTo(42.5, -28, 42, -22);
+      ctx.quadraticCurveTo(41.5, -31, 37, -30.5);      // oreja de este lado
+      ctx.quadraticCurveTo(33, -30, 33.5, -21.5);
+      ctx.bezierCurveTo(30, -19, 26, -20, 22, -21);        // nuca
+      ctx.bezierCurveTo(14, -23, 6, -19, -4, -15.5);       // cruz → lomo
+      ctx.bezierCurveTo(-12, -13, -20, -18.5, -28, -18);   // anca
+      ctx.bezierCurveTo(-36, -17.5, -42, -12, -43, -5);    // grupa
+      ctx.bezierCurveTo(-43.5, 1, -40, 6, -34, 7);         // nalga
+      ctx.bezierCurveTo(-26, 8, -20, 4, -12, 5);           // ijar recogido
+      ctx.bezierCurveTo(-2, 6.5, 6, 15, 16, 14.5);         // pecho hondo
+      ctx.bezierCurveTo(25, 14, 30, 9, 34, 4.5);           // pecho → garganta
+      ctx.quadraticCurveTo(40, 7.5, 47, 6);                // mandíbula
+      ctx.quadraticCurveTo(57, 4, 61, 0.5);                // mentón
+      ctx.quadraticCurveTo(64.5, -2, 63.5, -6);            // belfo → nariz
+      ctx.closePath();
+    }
+    function trazoPataDelantera(ctx) {                 // apunta hacia +x desde el hombro
+      ctx.beginPath();
+      ctx.moveTo(-8, -12);
+      ctx.bezierCurveTo(8, -13, 22, -8.5, 34, -7.5);
+      ctx.quadraticCurveTo(43, -7, 49, -8);
+      ctx.quadraticCurveTo(58, -6.5, 58, 0);           // garra
+      ctx.quadraticCurveTo(58, 5.5, 49, 5.5);
+      ctx.quadraticCurveTo(40, 5, 32, 6);
+      ctx.bezierCurveTo(20, 7, 8, 13, -8, 12);
+      ctx.closePath();
+    }
+    function trazoPataTrasera(ctx) {                   // apunta hacia +x desde la cadera (se dibuja espejada)
+      ctx.beginPath();
+      ctx.moveTo(-8, -14);
+      ctx.bezierCurveTo(8, -16, 20, -13, 28, -8.5);
+      ctx.quadraticCurveTo(34, -11, 40, -7.5);         // corvejón
+      ctx.quadraticCurveTo(48, -5, 55, -6);
+      ctx.quadraticCurveTo(63, -5, 63, 0);             // garra
+      ctx.quadraticCurveTo(63, 5, 55, 5);
+      ctx.quadraticCurveTo(44, 4.5, 34, 5);
+      ctx.bezierCurveTo(24, 6, 12, 14, -8, 13);
+      ctx.closePath();
+    }
+    function trazoCola(ctx) {                          // base en el origen, se va hacia −x y remata hacia arriba
+      ctx.beginPath();
+      ctx.moveTo(3, -5.5);
+      ctx.bezierCurveTo(-12, -5, -22, 1.5, -33, 1);
+      ctx.bezierCurveTo(-45, 0.5, -55, -5, -60, -17);
+      ctx.quadraticCurveTo(-61.5, -23.5, -66, -23);
+      ctx.quadraticCurveTo(-70.5, -22.5, -69, -17);
+      ctx.bezierCurveTo(-64.5, -2, -54, 8, -41, 8.5);
+      ctx.bezierCurveTo(-28, 9, -16, 3.5, 3, 6);
+      ctx.closePath();
+    }
+
+    var ESCALA_P = 0.86, CENTRO_P = [12, -3];          // punto del dibujo que coincide con el centro de la caja
+    /* Las siete piezas, de atrás hacia delante: [trazo, x, y, ángulo, espejo, escala]. */
+    function piezas(pose) {
+      var d = 0.34 + 0.6 * pose, t = 0.24 + 0.52 * pose, cola = 0.22 - 0.5 * pose;
+      return [
+        [trazoPataDelantera, 22, 3, d - 0.26, false, 0.9],
+        [trazoPataTrasera, -33, -1, t - 0.22, true, 0.9],
+        [trazoCola, -40, -9, cola, false, 1],
+        [trazoTorso, 0, 0, 0, false, 1],
+        [trazoPataDelantera, 16, 4, d, false, 1],
+        [trazoPataTrasera, -30, 0, t, true, 1]
+      ];
+    }
+    function colocar(ctx, pz) {
+      ctx.translate(pz[1], pz[2]);
+      if (pz[4]) ctx.scale(-1, 1);
+      ctx.rotate(pz[3]);
+      if (pz[5] !== 1) ctx.scale(pz[5], pz[5]);
+      pz[0](ctx);
+    }
+    function pantera(ctx, x, y, ang, alfa, ojos, pose) {
+      var ke = kcss * ESCALA_P, filo = Math.max(2.6, (ke < 0.5 ? 1.9 : 2.4) / ke), lista = piezas(pose), g, i, ex, ey, tam, rOjo;
+      ctx.save();
+      ctx.globalAlpha = alfa;
+      ctx.translate(x, y);
+      ctx.rotate(ang);
+      ctx.scale(ESCALA_P, ESCALA_P);
+      ctx.translate(-CENTRO_P[0], -CENTRO_P[1]);
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      g = ctx.createLinearGradient(0, -28, 0, 30);     // filo de luz: más vivo en el lomo
+      g.addColorStop(0, tinta(tok.mag, 1));
+      g.addColorStop(0.5, tinta(tok.mag, 0.82));
+      g.addColorStop(1, tinta(tok.mag, 0.45));
+      ctx.strokeStyle = g;
+      ctx.lineWidth = filo;
+      for (i = 0; i < lista.length; i++) { ctx.save(); colocar(ctx, lista[i]); ctx.restore(); ctx.stroke(); }
+      ctx.fillStyle = col.pantera;                     // el relleno tapa los trazos interiores: queda solo el contorno
+      for (i = 0; i < lista.length; i++) { ctx.save(); colocar(ctx, lista[i]); ctx.restore(); ctx.fill(); }
+      if (ojos > 0.02) {                               // ojos dorados con brillo
+        rOjo = Math.max(1, 1.45 / (3.2 * ke));
+        for (i = 0; i < 2; i++) {
+          ex = i === 0 ? 48.4 : 55.2; ey = i === 0 ? -12.6 : -11.2;
+          tam = (i === 0 ? 22 : 16) * rOjo;
+          ctx.globalAlpha = alfa * ojos * 0.9;
+          ctx.drawImage(capas.luzOro, ex - tam / 2, ey - tam / 2, tam, tam);
+          ctx.globalAlpha = alfa * ojos;
+          ctx.fillStyle = col.oro;
+          ctx.beginPath();
+          ctx.ellipse(ex, ey, (i === 0 ? 3.2 : 2.3) * rOjo, (i === 0 ? 1.8 : 1.4) * rOjo, i === 0 ? -0.3 : 0.16, 0, TAU);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    /* Un punto del dibujo de la pantera llevado a coordenadas de escena. */
+    function puntoDePantera(px, py, x, y, ang) {
+      var lx = (px - CENTRO_P[0]) * ESCALA_P, ly = (py - CENTRO_P[1]) * ESCALA_P, c = Math.cos(ang), s = Math.sin(ang);
+      return [x + lx * c - ly * s, y + lx * s + ly * c];
+    }
+
+    /* Estela corta: una cinta que nace en la grupa, sigue el arco recién recorrido y se afila hasta desaparecer. */
+    function estela(ctx, puntos, vel, alfa, ancla) {
+      var n = puntos.length, pasoX = vel * 2 * C.DT, i, w, g, x1;
+      if (n < 4) return;
+      x1 = ancla[0] - (n - 1) * pasoX;
+      g = ctx.createLinearGradient(ancla[0], 0, x1, 0);
+      g.addColorStop(0, tinta(tok.mag, 0.34 * alfa));
+      g.addColorStop(0.6, tinta(tok.mag, 0.1 * alfa));
+      g.addColorStop(1, tinta(tok.mag, 0));
+      ctx.save();
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      for (i = 0; i < n; i++) {                        // borde de arriba, hacia atrás
+        w = 9 * (1 - i / (n - 1));
+        if (i === 0) ctx.moveTo(ancla[0], ancla[1] - w);
+        else ctx.lineTo(ancla[0] - i * pasoX, ancla[1] + (puntos[i] - puntos[0]) - w);
+      }
+      for (i = n - 1; i >= 0; i--) {                   // borde de abajo, de vuelta
+        w = 9 * (1 - i / (n - 1));
+        ctx.lineTo(ancla[0] - i * pasoX, ancla[1] + (puntos[i] - puntos[0]) + w);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* Ráfaga dorada cuando la pantera cobra y sale de escena. */
+    function rafaga(ctx, r) {
+      var g = ctx.createLinearGradient(r.x0, 0, r.x1, 0);
+      g.addColorStop(0, tinta(tok.gold, 0));
+      g.addColorStop(1, tinta(tok.gold, 0.6 * r.alfa));
+      ctx.save();
+      ctx.strokeStyle = g;
+      ctx.lineCap = 'round';
+      ctx.lineWidth = Math.max(1.2 / kcss, 3);
+      ctx.beginPath();
+      ctx.moveTo(r.x0, r.y0);
+      ctx.lineTo(r.x1, r.y1);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function luciernagas(ctx, t, dist) {
+      var i, l, px, py, a, tam, img;
+      for (i = 0; i < luces.length; i++) {
+        l = luces[i];
+        px = (l.x - dist * l.prof + Math.sin(t * l.v * 0.7 + l.f) * l.a) % 1200;
+        if (px < 0) px += 1200;
+        px -= 120;
+        py = l.y + Math.cos(t * l.v * 0.9 + l.f * 1.7) * l.a * 0.6;
+        a = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * l.v * 2.2 + l.f));
+        tam = Math.max(22, 9 / kcss);
+        img = l.menta ? capas.luzMenta : capas.luzOro;
+        ctx.globalAlpha = a;
+        ctx.drawImage(img, px - tam / 2, py - tam / 2, tam, tam);
+        ctx.fillStyle = l.menta ? tinta(tok.mint) : col.oro;
+        ctx.beginPath();
+        ctx.arc(px, py, Math.max(1.5, 0.9 / kcss), 0, TAU);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    /* El número grande del fondo: tótems en Práctica, multiplicador en Cacería. */
+    function cifraFantasma(ctx, f) {
+      var ancho, esc, c3 = f.tono === 'mint' ? tok.mint : (f.tono === 'gold' ? tok.gold : tok.bone);
+      ctx.save();
+      ctx.font = '900 170px ' + tok.display;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ancho = ctx.measureText(f.texto).width || 1;
+      esc = Math.min(1, 590 / ancho) * (1 + 0.07 * f.pop);
+      ctx.translate(606, 262);
+      ctx.scale(esc, esc);
+      ctx.fillStyle = tinta(c3, 0.035 + 0.05 * f.pop);
+      ctx.fillText(f.texto, 0, 0);
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = Math.max(2.5, 1.3 / (kcss * esc));
+      ctx.strokeStyle = tinta(c3, 0.26 + 0.3 * f.pop);
+      ctx.strokeText(f.texto, 0, 0);
+      ctx.restore();
+    }
+
+    function particulas(ctx, lista) {
+      var i, p, a;
+      for (i = 0; i < lista.length; i++) {
+        p = lista[i];
+        a = 1 - p.t / p.vida;
+        if (a <= 0) continue;
+        ctx.globalAlpha = a * p.alfa;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(p.r * (0.6 + 0.4 * a), 0.8 / kcss), 0, TAU);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function destello(ctx, d) {
+      var p = d.t / d.vida, r, g;
+      if (p >= 1) return;
+      r = 34 + 96 * p;
+      g = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, r);
+      g.addColorStop(0, tinta(d.color, 0.7 * (1 - p)));
+      g.addColorStop(0.45, tinta(d.color, 0.22 * (1 - p)));
+      g.addColorStop(1, tinta(d.color, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(d.x - r, d.y - r, r * 2, r * 2);
+    }
+
+    /* v = todo lo que hay que dibujar en este cuadro. */
+    function pintar(ctx, v) {
+      var par = v.reducir ? 0 : 1, d = v.dist, i;
+      if (!capas) return;
+      ctx.setTransform(k, 0, 0, k, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.drawImage(capas.cielo, 0, 0, W, H);
+      ctx.save();
+      if (v.sacude) ctx.translate(v.sacude[0], v.sacude[1]);
+      if (v.fantasma) cifraFantasma(ctx, v.fantasma);
+      mosaico(ctx, capas.lejos, d * 0.1 * par, 0, H);
+      mosaico(ctx, capas.bruma, (d * 0.2 + v.reloj * 7) * par + 300, 236, 230);
+      mosaico(ctx, capas.medio, d * 0.34 * par, 0, H);
+      for (i = 0; i < v.totems.length; i++) totem(ctx, v.totems[i], d, v.cruzados);
+      if (!v.reducir) luciernagas(ctx, v.reloj, d);
+      mosaico(ctx, capas.suelo, d, SUELO_Y0, SUELO_ALTO);
+      if (v.rafaga && !v.reducir) rafaga(ctx, v.rafaga);
+      if (v.estela && v.pantera && !v.reducir) estela(ctx, v.estela, v.vel, v.alfaEstela, puntoDePantera(-30, -4, v.pantera.x, v.pantera.y, v.pantera.ang));
+      if (v.pantera) pantera(ctx, v.pantera.x, v.pantera.y, v.pantera.ang, v.pantera.alfa, v.pantera.ojos, v.pantera.pose);
+      mosaico(ctx, capas.cerca, d * 1.3 * par + 140, CERCA_Y0, CERCA_ALTO);
+      if (v.particulas && v.particulas.length) particulas(ctx, v.particulas);
+      if (v.destello) destello(ctx, v.destello);
+      ctx.restore();
+    }
+
+    return { preparar: preparar, pintar: pintar, col: col };
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 3. PANEL: estados, entradas, contabilidad y bucle
+   * ══════════════════════════════════════════════════════════════════════ */
+
+  var CLAVE_MEJOR = 'tribebet-pantera-mejor';
+  var BLOQUEO_MS = 650;          // tras terminar, los toques se ignoran un instante
+  var HISTORIAL_MAX = 8;
+  var DPR_MAX = 2;
+  var ANCHO_PX_MAX = 1920;
+  var MENOS = '−';
+
+  var I = null;                  // instancia montada (una a la vez)
+  var visibleAnfitrion = true;
+
+  function ahora() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
+
+  function leerMejor() {
+    try {
+      var n = parseInt(window.localStorage.getItem(CLAVE_MEJOR), 10);
+      return isFinite(n) && n > 0 ? n : 0;
+    } catch (err) { return 0; }
+  }
+  function guardarMejor(n) {
+    try { window.localStorage.setItem(CLAVE_MEJOR, String(n)); } catch (err) { /* sin almacenamiento: la marca vive solo en esta sesión */ }
+  }
+
+  function nuevaSemilla() {
+    var b = new Uint8Array(16), cr = window.crypto || window.msCrypto, i, s = '';
+    if (cr && cr.getRandomValues) cr.getRandomValues(b);
+    else for (i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256);
+    for (i = 0; i < 16; i++) s += (b[i] < 16 ? '0' : '') + b[i].toString(16);
+    return s;
+  }
+
+  function hayHuella() {
+    return !!(window.crypto && window.crypto.subtle && typeof window.crypto.subtle.digest === 'function' && typeof window.TextEncoder === 'function');
+  }
+  /* Primeros 12 hex del SHA-256 del texto de la semilla. */
+  function huellaDe(semilla) {
+    if (!hayHuella()) return Promise.resolve(null);
+    try {
+      return window.crypto.subtle.digest('SHA-256', new window.TextEncoder().encode(String(semilla))).then(function (buf) {
+        var v = new Uint8Array(buf), s = '', i;
+        for (i = 0; i < 6; i++) s += (v[i] < 16 ? '0' : '') + v[i].toString(16);
+        return s;
+      }, function () { return null; });
+    } catch (err) { return Promise.resolve(null); }
+  }
+
+  function desmontar() {
+    if (!I) return;
+    var i;
+    if (I.raf) window.cancelAnimationFrame(I.raf);
+    if (I.temporizador) window.clearTimeout(I.temporizador);
+    for (i = 0; i < I.limpieza.length; i++) { try { I.limpieza[i](); } catch (err) { /* nada */ } }
+    I = null;
+  }
+
+  function montar(opc) {
+    if (!opc || !opc.root || !opc.root.querySelector) throw new Error('PanteraGame.mount: falta root (el #pt-root del panel).');
+    if (I) desmontar();
+
+    var root = opc.root;
+    function q(n) { return root.querySelector('[data-pt="' + n + '"]'); }
+    var el = {
+      lienzo: q('lienzo'), escena: q('escena'), toque: q('toque'), aviso: q('aviso'),
+      avisoCeja: q('aviso-ceja'), avisoCifra: q('aviso-cifra'), avisoUnidad: q('aviso-unidad'),
+      avisoTexto: q('aviso-texto'), avisoPista: q('aviso-pista'),
+      totems: q('totems'), mult: q('mult'), datoMult: q('dato-mult'), mejor: q('mejor'),
+      apuestas: q('apuestas'), saldo: q('saldo'), cobrar: q('cobrar'), cobrarTexto: q('cobrar-texto'),
+      estado: q('estado'), rango: q('rango'), rangoSig: q('rango-sig'), hist: q('hist'),
+      ruta: q('ruta'), huella: q('huella'), anterior: q('anterior'), huellaAnt: q('huella-ant'),
+      semillaAnt: q('semilla-ant'), verificar: q('verificar'), verifRes: q('verif-res')
+    };
+    var falta = [], nombre;
+    for (nombre in el) if (!el[nombre]) falta.push(nombre);
+    if (falta.length) throw new Error('PanteraGame.mount: falta marcado de pantera.panel.html (' + falta.join(', ') + ').');
+
+    var anfitrion = {
+      cobra: typeof opc.cobra === 'function' ? opc.cobra : function () { return false; },
+      paga: typeof opc.paga === 'function' ? opc.paga : function () {},
+      getSaldo: typeof opc.getSaldo === 'function' ? opc.getSaldo : null,
+      fmt: typeof opc.fmt === 'function' ? opc.fmt : function (n) { return String(n); },
+      onRun: typeof opc.onRun === 'function' ? opc.onRun : null
+    };
+    var botonesModo = Array.prototype.slice.call(root.querySelectorAll('[data-pt-modo-btn]'));
+    var botonesApuesta = Array.prototype.slice.call(root.querySelectorAll('[data-pt-apuesta]'));
+    var tok = leerTokens(root);
+    var mm = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    var mt = window.matchMedia ? window.matchMedia('(hover: none), (pointer: coarse)') : null;
+
+    I = {
+      root: root, el: el,
+      ctx: el.lienzo.getContext('2d'),
+      arte: crearArte(tok), tok: tok,
+      modo: 'practica', apuesta: C.APUESTAS[0],
+      fase: 'reposo', pausa: false,
+      estado: null, corrida: null, ultimo: null,
+      semilla: null, huella: null, semillaFija: null, anterior: null,
+      mejor: leerMejor(), historial: [],
+      saltoPendiente: false, piloto: false, congelado: false,
+      acum: 0, ultimoTs: 0, reloj: 0, raf: 0, temporizador: 0, cuadros: 0,
+      bloqueoHasta: 0, ultimaTeclaSalto: -1e9, espacioTomado: false, ignorarClic: false, atencion: false,
+      aviso: null,                 // aviso puntual (sin créditos)
+      estela: [], particulas: [], destello: null, sacudeT: -1, popT: 9, salidaT: -1,
+      caida: null, angVis: 0, poseVis: 0.3,
+      pw: 0, k: 0, kcss: 1,
+      enVista: true, reducir: !!(mm && mm.matches), tactil: !!(mt && mt.matches),
+      limpieza: []
+    };
+    var yo = I;
+
+    function escucha(objetivo, tipo, fn, opciones) {
+      objetivo.addEventListener(tipo, fn, opciones || false);
+      yo.limpieza.push(function () { objetivo.removeEventListener(tipo, fn, opciones || false); });
+    }
+    function fmt(n) { try { return String(anfitrion.fmt(n)); } catch (err) { return String(n); } }
+    function creditos(n) { return fmt(n) + (n === 1 ? ' crédito' : ' créditos'); }
+    function saldoActual() {
+      if (!anfitrion.getSaldo) return null;
+      try { var s = anfitrion.getSaldo(); return typeof s === 'number' && isFinite(s) ? s : null; } catch (err) { return null; }
+    }
+    function texto(nodo, t) { if (nodo.textContent !== t) nodo.textContent = t; }
+    function mostrar(nodo, si) { if (nodo.hidden === si) nodo.hidden = !si; }
+    function pulso(nodo) {
+      if (I.reducir) return;
+      nodo.classList.remove('pt-pulso');
+      void nodo.offsetWidth;
+      nodo.classList.add('pt-pulso');
+    }
+
+    /* ── Ruta: semilla + huella comprometida antes de salir ── */
+    function prepararRuta() {
+      var s = I.semillaFija !== null ? I.semillaFija : nuevaSemilla();
+      I.semilla = s;
+      I.huella = null;
+      huellaDe(s).then(function (h) {
+        if (I !== yo) return;
+        if (I.semilla === s) I.huella = h;
+        if (I.anterior && I.anterior.semilla === s && !I.anterior.huella) I.anterior.huella = h;
+        pintarRuta();
+      });
+    }
+
+    /* ── Pintado del panel (DOM) ── */
+    function pintarMarcador(conPulso) {
+      var n = I.estado ? I.estado.cruzados : 0, enCorrida = I.fase === 'juego', caceria = I.modo === 'caceria';
+      var puede = enCorrida && caceria && n >= 1 && I.corrida && !I.corrida.cerrada;
+      texto(el.totems, String(n));
+      var hayMult = n >= 1 && (enCorrida || I.fase === 'cobrado');
+      texto(el.mult, hayMult ? textoMult(n) : '×0.00');     // sin tótems cruzados no hay nada que cobrar
+      if (hayMult) el.mult.removeAttribute('data-pt-cero'); else el.mult.setAttribute('data-pt-cero', '');
+      texto(el.mejor, String(I.mejor));
+      if (puede) texto(el.cobrarTexto, 'Cobrar ' + textoMult(n) + ' → ' + creditos(pago(I.corrida.apuesta, n)));
+      else texto(el.cobrarTexto, I.fase === 'cobrado' ? 'Cobrado' : 'Cobrar');
+      if (el.cobrar.disabled === puede) el.cobrar.disabled = !puede;
+      if (conPulso) { pulso(el.totems); if (caceria) pulso(el.mult); }
+    }
+
+    function pintarAviso() {
+      var a = { tono: '', ceja: '', cifra: '', unidad: '', texto: '', pista: '' }, u = I.ultimo, caceria = I.modo === 'caceria';
+      if (I.fase === 'juego' && !I.pausa && !I.aviso) return;   // en corrida el aviso está oculto: se deja como estaba
+      if (I.aviso) {
+        a = I.aviso;
+      } else if (I.fase === 'juego') {
+        if (I.pausa) { a.texto = 'En pausa'; a.pista = 'Toca para seguir'; }
+      } else if (I.fase === 'reposo' || !u) {
+        if (caceria) { a.texto = 'Toca para salir de cacería'; a.pista = 'Apuestas ' + creditos(I.apuesta); }
+        else { a.texto = 'Toca para saltar'; a.pista = I.tactil ? 'Cada toque, un salto' : 'Espacio, ↑ o W'; }
+      } else if (u.cobrado) {
+        a.tono = 'gana'; a.ceja = 'Cobraste ' + u.multTxt; a.cifra = '+' + fmt(u.neto); a.unidad = u.neto === 1 ? 'crédito' : 'créditos';
+      } else if (u.modo === 'caceria') {
+        a.tono = 'pierde'; a.ceja = 'Caída en el tótem ' + u.falloEn; a.cifra = MENOS + fmt(u.apuesta); a.unidad = u.apuesta === 1 ? 'crédito' : 'créditos';
+      } else {
+        a.ceja = u.record ? 'Nueva mejor marca' : 'Caída en el tótem ' + u.falloEn;
+        a.tono = u.record ? 'gana' : '';
+        a.cifra = String(u.totems); a.unidad = u.totems === 1 ? 'tótem cruzado' : 'tótems cruzados';
+      }
+      if (!I.aviso && (I.fase === 'cobrado' || I.fase === 'caida') && u) {
+        a.pista = caceria ? 'Toca para otra cacería · ' + creditos(I.apuesta) : 'Toca para volver a saltar';
+      }
+      if (a.tono) el.aviso.setAttribute('data-pt-tono', a.tono); else el.aviso.removeAttribute('data-pt-tono');
+      texto(el.avisoCeja, a.ceja); mostrar(el.avisoCeja, !!a.ceja);
+      texto(el.avisoCifra, a.cifra); mostrar(el.avisoCifra, !!a.cifra);
+      texto(el.avisoUnidad, a.unidad); mostrar(el.avisoUnidad, !!a.unidad);
+      texto(el.avisoTexto, a.texto); mostrar(el.avisoTexto, !!a.texto);
+      texto(el.avisoPista, a.pista); mostrar(el.avisoPista, !!a.pista);
+    }
+
+    function decir(t, tono) {
+      texto(el.estado, t);
+      if (tono) el.estado.setAttribute('data-pt-tono', tono); else el.estado.removeAttribute('data-pt-tono');
+    }
+    function estadoDeCorrida() {
+      if (I.modo !== 'caceria') decir('Corrida de práctica en marcha.');
+      else if (I.estado.cruzados >= 1) decir(I.tactil ? 'Ya puedes cobrar con el botón Cobrar.' : 'Ya puedes cobrar: botón Cobrar, tecla C o Enter.');
+      else decir('Cacería en marcha. Cruza el primer tótem para poder cobrar.');
+    }
+    function estadoDeReposo() {
+      if (I.modo === 'caceria') decir('Apuestas ' + creditos(I.apuesta) + ' al salir. Cada tótem multiplica ×1.09.');
+      else decir(I.tactil ? 'Modo práctica: gratis y sin apuesta. Toca la selva para saltar.' : 'Modo práctica: gratis y sin apuesta. Toca la selva o pulsa Espacio.');
+    }
+
+    function pintarRango() {
+      var r = rango(I.mejor);
+      texto(el.rango, r.actual ? r.actual.nombre : 'Sin rango');
+      if (r.actual) el.rango.removeAttribute('data-pt-vacio'); else el.rango.setAttribute('data-pt-vacio', '');
+      texto(el.rangoSig, r.siguiente ? r.siguiente.nombre + ' a los ' + r.siguiente.min + ' tótems.' : 'Es el rango más alto.');
+    }
+
+    function pintarHistorial() {
+      var i, h, li, visible, oculto;
+      while (el.hist.firstChild) el.hist.removeChild(el.hist.firstChild);
+      if (!I.historial.length) {
+        li = document.createElement('li');
+        li.className = 'pt-nota';
+        li.textContent = 'Aún no hay corridas.';
+        el.hist.appendChild(li);
+        return;
+      }
+      for (i = 0; i < I.historial.length; i++) {
+        h = I.historial[i];
+        li = document.createElement('li');
+        li.className = 'pt-chip' + (h.cobrado ? ' pt-chip--gana' : (h.modo === 'caceria' ? ' pt-chip--pierde' : ''));
+        visible = document.createElement('span');
+        visible.setAttribute('aria-hidden', 'true');
+        visible.textContent = h.cobrado ? h.multTxt : 'tótem ' + h.falloEn;
+        oculto = document.createElement('span');
+        oculto.className = 'pt-vh';
+        oculto.textContent = h.cobrado
+          ? 'Cacería: cobraste ' + h.multTxt + ', +' + creditos(h.neto)
+          : (h.modo === 'caceria'
+            ? 'Cacería: caída en el tótem ' + h.falloEn + ', ' + MENOS + creditos(h.apuesta)
+            : 'Práctica: caída en el tótem ' + h.falloEn);
+        li.appendChild(visible);
+        li.appendChild(oculto);
+        el.hist.appendChild(li);
+      }
+    }
+
+    function pintarRuta() {
+      var ant = I.anterior;
+      if (!hayHuella()) { mostrar(el.ruta, false); return; }
+      mostrar(el.ruta, true);
+      texto(el.huella, I.huella || '············');
+      mostrar(el.anterior, !!ant);
+      if (!ant) return;
+      texto(el.huellaAnt, ant.huella || 'sin huella previa');
+      texto(el.semillaAnt, ant.semilla);
+      if (ant.verificada === null) { texto(el.verifRes, ''); el.verifRes.removeAttribute('data-pt-tono'); }
+      else if (ant.verificada) { texto(el.verifRes, 'Coincide: es la ruta que quedó fijada antes de salir.'); el.verifRes.setAttribute('data-pt-tono', 'gana'); }
+      else { texto(el.verifRes, 'No coincide con la huella mostrada antes de salir.'); el.verifRes.setAttribute('data-pt-tono', 'pierde'); }
+    }
+
+    function pintarSaldo() {
+      var s = saldoActual();
+      texto(el.saldo, s === null ? '—' : fmt(s));
+    }
+
+    function pintarPanel() {
+      var caceria = I.modo === 'caceria', enCorrida = I.fase === 'juego', i, b, activo;
+      root.setAttribute('data-pt-modo', I.modo);
+      root.setAttribute('data-pt-fase', I.fase);
+      if (I.pausa) root.setAttribute('data-pt-pausa', ''); else root.removeAttribute('data-pt-pausa');
+      mostrar(el.apuestas, caceria);
+      mostrar(el.datoMult, caceria);
+      mostrar(el.cobrar, caceria);
+      for (i = 0; i < botonesModo.length; i++) {
+        b = botonesModo[i];
+        activo = b.getAttribute('data-pt-modo-btn') === I.modo;
+        b.setAttribute('aria-pressed', activo ? 'true' : 'false');
+        if (b.disabled !== enCorrida) b.disabled = enCorrida;
+      }
+      for (i = 0; i < botonesApuesta.length; i++) {
+        b = botonesApuesta[i];
+        activo = Number(b.getAttribute('data-pt-apuesta')) === I.apuesta;
+        b.setAttribute('aria-pressed', activo ? 'true' : 'false');
+        if (b.disabled !== enCorrida) b.disabled = enCorrida;
+      }
+      el.toque.setAttribute('aria-label',
+        enCorrida ? (I.pausa ? 'Seguir: un toque, un salto' : 'Saltar')
+          : (I.fase === 'reposo' ? (caceria ? 'Salir de cacería: apuestas ' + creditos(I.apuesta) : 'Empezar: un toque, un salto')
+            : (caceria ? 'Otra cacería: apuestas ' + creditos(I.apuesta) : 'Volver a saltar')));
+      pintarMarcador(false);
+      pintarAviso();
+      pintarRango();
+      pintarHistorial();
+      pintarRuta();
+      pintarSaldo();
+    }
+
+    /* ── Corrida ── */
+    function limpiarEfectos() {
+      I.estela = []; I.particulas = []; I.destello = null; I.sacudeT = -1; I.popT = 9; I.salidaT = -1; I.caida = null; I.angVis = 0;
+    }
+
+    function irAReposo() {
+      I.fase = 'reposo';
+      I.pausa = false;
+      I.aviso = null;
+      I.corrida = null;
+      I.saltoPendiente = false;
+      I.estado = crearEstado(I.semilla);
+      limpiarEfectos();
+      estadoDeReposo();
+      pintarPanel();
+    }
+
+    function sinCreditos() {
+      I.fase = 'reposo';
+      I.pausa = false;
+      I.corrida = null;
+      I.estado = crearEstado(I.semilla);
+      limpiarEfectos();
+      I.aviso = { tono: 'pierde', ceja: '', cifra: '', unidad: '', texto: 'No te alcanzan los créditos', pista: 'Toca Reiniciar saldo' };
+      decir('No te alcanzan los créditos. Toca Reiniciar saldo.', 'pierde');
+      pintarPanel();
+    }
+
+    function empezar() {
+      var ok;
+      if (I.modo === 'caceria') {
+        try { ok = !!anfitrion.cobra(I.apuesta); } catch (err) { ok = false; }
+        if (!ok) { sinCreditos(); return false; }
+      }
+      I.corrida = { modo: I.modo, apuesta: I.modo === 'caceria' ? I.apuesta : 0, cerrada: false };
+      I.estado = crearEstado(I.semilla);
+      I.fase = 'juego';
+      I.pausa = false;
+      I.aviso = null;
+      I.acum = 0;
+      I.ultimoTs = 0;
+      I.saltoPendiente = true;                         // el toque que arranca también es el primer salto
+      limpiarEfectos();
+      estadoDeCorrida();
+      pintarPanel();
+      pedirCuadro();
+      return true;
+    }
+
+    function chispas(x, y, n, c3, fuerza) {
+      var i, ang, vel;
+      if (I.reducir) return;
+      for (i = 0; i < n; i++) {
+        ang = Math.random() * TAU; vel = fuerza * (0.35 + Math.random() * 0.65);
+        I.particulas.push({
+          x: x, y: y, vx: Math.cos(ang) * vel, vy: Math.sin(ang) * vel - fuerza * 0.25, g: 520,
+          r: 2 + Math.random() * 3.2, t: 0, vida: 0.45 + Math.random() * 0.4, alfa: 0.7, color: tinta(c3)
+        });
+      }
+    }
+
+    function vibrar(patron) {
+      if (!I.tactil || I.reducir || !navigator.vibrate) return;
+      if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+      try { navigator.vibrate(patron); } catch (err) { /* nada */ }
+    }
+
+    function terminar(cobrado, pagoN) {
+      var e = I.estado, n = e.cruzados, c = I.corrida, neto, record, res;
+      I.fase = cobrado ? 'cobrado' : 'caida';
+      I.pausa = false;
+      I.saltoPendiente = false;
+      I.acum = 0;
+      I.bloqueoHasta = ahora() + BLOQUEO_MS;
+      c.cerrada = true;
+      neto = cobrado ? pagoN - c.apuesta : -c.apuesta;
+      record = n > I.mejor;
+      if (record) { I.mejor = n; guardarMejor(n); }
+      I.ultimo = {
+        modo: c.modo, cobrado: cobrado, totems: n, apuesta: c.apuesta, pago: pagoN, neto: neto,
+        multTxt: textoMult(n), record: record, falloEn: n + 1
+      };
+      I.historial.unshift(I.ultimo);
+      if (I.historial.length > HISTORIAL_MAX) I.historial.length = HISTORIAL_MAX;
+      I.anterior = { semilla: e.semilla, huella: I.huella, verificada: null };
+
+      if (cobrado) {
+        I.salidaT = 0;
+        I.popT = 0;
+        chispas(C.PANTERA_X + 10, e.y, 14, I.tok.gold, 210);
+        vibrar([12, 50, 12]);
+        decir('Cobraste ' + textoMult(n) + ': +' + creditos(neto), 'gana');
+      } else {
+        vibrar(35);
+        I.caida = e.causa === 'suelo'
+          ? { x: C.PANTERA_X, vx: 0, y: C.SUELO - 12, vy: 0, ang: 0.12, enSuelo: true }
+          : { x: C.PANTERA_X, vx: -150, y: e.y, vy: Math.min(e.vy, 120), ang: I.angVis, enSuelo: false };
+        if (!I.reducir) {                              // destello breve y sacudida: solo si el sistema no pide menos movimiento
+          I.destello = { x: C.PANTERA_X + (e.causa === 'suelo' ? 0 : 16), y: e.y, t: 0, vida: 0.2, color: I.tok.bone };
+          I.sacudeT = 0;
+        }
+        chispas(C.PANTERA_X + 8, e.y, 12, I.tok.bone, 150);
+        if (c.modo === 'caceria') decir('Fallaste el salto en el tótem ' + (n + 1) + ': ' + MENOS + creditos(c.apuesta), 'pierde');
+        else decir('Fallaste el salto en el tótem ' + (n + 1) + '. ' + (record ? 'Nueva mejor marca: ' : 'Cruzaste ') + n + (n === 1 ? ' tótem.' : ' tótems.'));
+      }
+
+      res = {
+        modo: c.modo, totems: n, apuesta: c.apuesta, mult: mult(n), pago: pagoN, cobrado: cobrado, semilla: e.semilla,
+        huella: I.huella, pasos: e.t, toques: e.toques.slice(), causa: cobrado ? null : e.causa
+      };
+      prepararRuta();                                  // la siguiente ruta queda comprometida desde ya
+      if (document.activeElement === el.cobrar) { try { el.toque.focus({ preventScroll: true }); } catch (err) { /* nada */ } }
+      pintarPanel();
+      if (anfitrion.onRun) { try { anfitrion.onRun(res); } catch (err) { /* el anfitrión responde por su callback */ } }
+    }
+
+    function cobrar() {
+      var e = I.estado, c = I.corrida, p;
+      if (I.fase !== 'juego' || !c || c.modo !== 'caceria' || c.cerrada) return false;
+      if (!e.vivo || e.cruzados < 1) return false;
+      c.cerrada = true;                                // antes de pagar: un segundo clic ya no entra
+      p = pago(c.apuesta, e.cruzados);
+      try { anfitrion.paga(p); } catch (err) { /* el anfitrión responde por su saldo */ }
+      terminar(true, p);
+      return true;
+    }
+
+    function avanzarUnPaso() {
+      var e = I.estado, saltar = I.saltoPendiente, antes = e.cruzados;
+      I.saltoPendiente = false;
+      if (!saltar && I.piloto) saltar = piloto(e);
+      paso(e, saltar);
+      if ((e.t & 1) === 0) {                           // muestra para la estela, 60 por segundo
+        I.estela.unshift(e.y);
+        if (I.estela.length > 22) I.estela.length = 22;
+      }
+      if (e.cruzados !== antes) {
+        I.popT = 0;
+        pintarMarcador(true);
+        if (e.cruzados === 1 && I.modo === 'caceria') estadoDeCorrida();
+      }
+      if (!e.vivo) terminar(false, 0);
+    }
+
+    /* ── Entradas ── */
+    function accionSalto() {
+      if (I.fase === 'juego') {
+        if (I.pausa) { I.pausa = false; I.acum = 0; I.ultimoTs = 0; estadoDeCorrida(); pintarPanel(); pedirCuadro(); }
+        I.saltoPendiente = true;
+        return;
+      }
+      if (ahora() < I.bloqueoHasta) return;            // evita reinicios (y apuestas) por un toque de más
+      empezar();
+    }
+
+    function pausar() {
+      if (I.fase !== 'juego' || I.pausa) return;
+      I.pausa = true;
+      I.saltoPendiente = false;
+      I.acum = 0;
+      decir('En pausa. Toca la selva para seguir.');
+      pintarPanel();
+    }
+
+    function cambiarModo(m) {
+      if (I.fase === 'juego' || (m !== 'practica' && m !== 'caceria')) return;
+      if (I.modo === m && I.fase === 'reposo' && !I.aviso) return;
+      I.modo = m;
+      irAReposo();
+    }
+    function cambiarApuesta(v) {
+      if (I.fase === 'juego' || C.APUESTAS.indexOf(v) < 0) return;
+      I.apuesta = v;
+      if (I.aviso || I.fase === 'reposo') irAReposo(); else pintarPanel();
+    }
+
+    function esControl(n) {
+      var t = n && n.tagName;
+      return t === 'BUTTON' || t === 'INPUT' || t === 'SELECT' || t === 'TEXTAREA' || t === 'A' || (n && n.isContentEditable);
+    }
+
+    function alTeclaAbajo(ev) {
+      if (I !== yo || !activo()) return;
+      if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      var t = ev.target, dentro = root.contains(t), suelto = (t === document.body || t === document.documentElement);
+      if (!dentro && !suelto) return;                  // el foco está en otro control de la página
+      // Sin foco en el panel, las teclas son del juego solo si hay corrida o si lo último que se tocó fue el panel:
+      // así Espacio y ↑ siguen sirviendo para recorrer la página y nadie apuesta sin querer.
+      if (!dentro && I.fase !== 'juego' && !I.atencion) return;
+      var kk = ev.key, espacio = (kk === ' ' || kk === 'Spacebar');
+      var salto = espacio || kk === 'ArrowUp' || kk === 'w' || kk === 'W';
+      var cobro = kk === 'c' || kk === 'C' || kk === 'Enter';
+      if (!salto && !cobro) return;
+      if (I.fase === 'juego') {                        // en corrida, estas teclas son del juego
+        ev.preventDefault();
+        if (espacio) I.espacioTomado = true;
+        if (ev.repeat) return;
+        if (salto) { I.ultimaTeclaSalto = ahora(); accionSalto(); }
+        else cobrar();
+        return;
+      }
+      if (!salto) return;                              // fuera de corrida, C y Enter no hacen nada especial
+      if (dentro && t !== el.toque && esControl(t) && espacio) return;   // Espacio activa el botón enfocado
+      ev.preventDefault();
+      if (espacio) I.espacioTomado = true;
+      if (ev.repeat) return;
+      I.ultimaTeclaSalto = ahora();
+      accionSalto();
+    }
+    function alTeclaArriba(ev) {
+      if (I !== yo) return;
+      var kk = ev.key;
+      if (kk !== ' ' && kk !== 'Spacebar') return;
+      // Si el juego tomó este Espacio, soltarlo no debe hacer "clic" en el botón enfocado (Cobrar incluido).
+      if (I.espacioTomado) { I.espacioTomado = false; ev.preventDefault(); }
+    }
+
+    /* ── Visibilidad y bucle ── */
+    function activo() {
+      return visibleAnfitrion && I.enVista && !document.hidden;
+    }
+    function pedirCuadro() {
+      if (!I.raf && activo()) I.raf = window.requestAnimationFrame(cuadro);
+    }
+    /* ¿La escena está dibujada y cruza la ventana ahora mismo? */
+    function enPantalla() {
+      var r = el.escena.getBoundingClientRect(), alto = window.innerHeight || document.documentElement.clientHeight;
+      return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < alto;
+    }
+    var hayObservador = !!window.IntersectionObserver;
+    function revisarActividad(medir) {
+      if (I !== yo) return;
+      if (medir === true || !hayObservador) I.enVista = enPantalla();   // sin observador (o recién mostrado) se mide al momento
+      if (!activo()) {
+        pausar();
+        if (I.raf) { window.cancelAnimationFrame(I.raf); I.raf = 0; }
+        return;
+      }
+      I.ultimoTs = 0;
+      ajustarLienzo();
+      pintarSaldo();
+      pedirCuadro();
+    }
+
+    function ajustarLienzo() {
+      var ancho = el.escena.getBoundingClientRect().width, dpr, pw;
+      if (!(ancho > 0)) return false;
+      dpr = Math.min(DPR_MAX, window.devicePixelRatio || 1);
+      pw = Math.round(ancho * dpr);
+      if (pw > ANCHO_PX_MAX) pw = ANCHO_PX_MAX;
+      if (pw < 240) pw = 240;
+      if (pw === I.pw && Math.abs(ancho / C.ANCHO - I.kcss) < 0.02) return true;
+      I.kcss = ancho / C.ANCHO;
+      if (pw !== I.pw) {
+        I.pw = pw;
+        el.lienzo.width = pw;
+        el.lienzo.height = Math.round(pw * C.ALTO / C.ANCHO);
+      }
+      I.k = pw / C.ANCHO;
+      I.arte.preparar(I.k, I.kcss);
+      return true;
+    }
+    function reajustarLuego() {
+      if (I !== yo) return;
+      if (!I.pw) { if (ajustarLienzo()) { pintarLienzo(); pedirCuadro(); } return; }   // primera vez: sin espera
+      if (I.temporizador) window.clearTimeout(I.temporizador);
+      I.temporizador = window.setTimeout(function () {
+        if (I !== yo) return;
+        I.temporizador = 0;
+        if (ajustarLienzo()) pintarLienzo();
+      }, 140);
+    }
+
+    function animar(dt) {
+      var i, p, objetivo = 0, pose = 0.3, c = I.caida, vivas;
+      if (I.popT < 9) I.popT += dt;
+      if (I.sacudeT >= 0) { I.sacudeT += dt; if (I.sacudeT > 0.3) I.sacudeT = -1; }
+      if (I.salidaT >= 0) I.salidaT += dt;
+      if (I.destello) { I.destello.t += dt; if (I.destello.t >= I.destello.vida) I.destello = null; }
+      if (I.particulas.length) {
+        vivas = [];
+        for (i = 0; i < I.particulas.length; i++) {
+          p = I.particulas[i];
+          p.t += dt;
+          if (p.t >= p.vida) continue;
+          p.vy += p.g * dt;
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          if (p.y > C.SUELO - 2) { p.y = C.SUELO - 2; p.vy = 0; p.vx *= 0.8; }
+          vivas.push(p);
+        }
+        I.particulas = vivas;
+      }
+      if (I.fase === 'juego') objetivo = I.pausa ? I.angVis : limitar(I.estado.vy / 900, -0.42, 0.72);
+      else if (I.fase === 'reposo') objetivo = I.reducir ? 0 : Math.sin(I.reloj * 2.1 + 1.2) * 0.05;
+      else if (I.fase === 'cobrado') objetivo = -0.16;
+      if (I.fase !== 'caida') I.angVis += (objetivo - I.angVis) * Math.min(1, dt * 14);
+      if (I.fase === 'juego') { if (!I.pausa) pose = limitar((I.estado.vy + 240) / 620, 0, 1); else pose = I.poseVis; }
+      else if (I.fase === 'reposo') pose = I.reducir ? 0.3 : 0.3 + 0.12 * Math.sin(I.reloj * 2.1 + 0.4);
+      else if (I.fase === 'cobrado') pose = 0;
+      else pose = 0.85;
+      I.poseVis += (pose - I.poseVis) * Math.min(1, dt * 12);
+      if (I.fase === 'caida' && c && !c.enSuelo) {     // caída solo visual: la simulación ya terminó
+        if (I.reducir) { c.enSuelo = true; }
+        else {
+          c.vy = Math.min(900, c.vy + 1900 * dt);
+          c.y += c.vy * dt;
+          c.x += c.vx * dt;
+          c.vx *= Math.max(0, 1 - 3 * dt);
+          c.ang += 5.2 * dt;
+          if (c.y >= C.SUELO - 12) {
+            c.y = C.SUELO - 12; c.enSuelo = true; c.ang = 0.12;
+            chispas(c.x - 6, C.SUELO - 4, 9, I.tok.bone, 120);
+          }
+        }
+      }
+    }
+
+    function pintarLienzo() {
+      var e = I.estado, v, n, extra, p, s;
+      if (!I.pw || !e) return;
+      n = e.cruzados;
+      v = {
+        reloj: I.reloj, reducir: I.reducir, dist: e.dist, totems: e.totems, cruzados: n, vel: e.vel,
+        estela: null, alfaEstela: 1, rafaga: null, particulas: I.particulas, destello: I.destello, sacude: null, fantasma: null,
+        pantera: { x: C.PANTERA_X, y: e.y, ang: I.angVis, alfa: 1, ojos: 1, pose: I.poseVis }
+      };
+      if (I.fase === 'juego') {
+        extra = I.pausa ? 0 : I.acum;                  // suaviza entre pasos de simulación
+        v.dist = e.dist + e.vel * extra;
+        v.pantera.y = e.y + e.vy * extra;
+        v.estela = I.estela;
+      } else if (I.fase === 'reposo') {
+        v.pantera.y = e.y + (I.reducir ? 0 : Math.sin(I.reloj * 2.1) * 7);
+      } else if (I.fase === 'cobrado') {               // la pantera sale de escena
+        p = I.reducir ? 1 : Math.min(1, I.salidaT / 0.62);
+        if (p >= 1) v.pantera = null;
+        else {
+          v.pantera.x = C.PANTERA_X + 900 * p * p;
+          v.pantera.y = e.y - 46 * p;
+          v.rafaga = { x0: C.PANTERA_X - 40, y0: e.y, x1: v.pantera.x - 30, y1: v.pantera.y, alfa: 1 - p * 0.6 };
+        }
+      } else if (I.fase === 'caida' && I.caida) {
+        v.pantera.x = I.caida.x;
+        v.pantera.y = I.caida.y;
+        v.pantera.ang = I.reducir ? 0.5 : I.caida.ang;
+        v.pantera.ojos = 0.4;
+        v.pantera.alfa = I.reducir ? 0.7 : 1;
+      }
+      if (n >= 1 && (I.fase === 'juego' || I.fase === 'cobrado')) {
+        s = Math.max(0, 1 - I.popT / 0.26);
+        v.fantasma = {
+          texto: (I.corrida && I.corrida.modo === 'caceria') ? textoMult(n) : String(n),
+          tono: I.fase === 'cobrado' ? 'mint' : ((I.corrida && I.corrida.modo === 'caceria') ? 'gold' : 'bone'),
+          pop: I.reducir ? 0 : s * s
+        };
+      }
+      if (I.sacudeT >= 0 && !I.reducir) {
+        s = 1 - I.sacudeT / 0.3;
+        v.sacude = [Math.sin(I.sacudeT * 95) * 7 * s, Math.cos(I.sacudeT * 71) * 5 * s];
+      }
+      I.arte.pintar(I.ctx, v);
+    }
+
+    function cuadro(ts) {
+      var dt, n;
+      if (I !== yo) return;
+      I.raf = 0;
+      if (!activo()) return;
+      I.cuadros++;
+      dt = I.ultimoTs ? (ts - I.ultimoTs) / 1000 : 0;
+      I.ultimoTs = ts;
+      if (dt < 0) dt = 0;
+      if (dt > 0.1) dt = 0.1;                          // tras un tirón no se "recupera" tiempo
+      if (I.congelado) dt = 0;                         // solo pruebas: el reloj no corre, pero se sigue pintando
+      I.reloj += dt;
+      if (I.fase === 'juego' && !I.pausa && !I.congelado) {
+        I.acum += dt;
+        n = 0;
+        while (I.acum >= C.DT && I.fase === 'juego') {
+          avanzarUnPaso();
+          I.acum -= C.DT;
+          if (++n >= 30) { I.acum = 0; break; }
+        }
+        if (I.fase !== 'juego') I.acum = 0;
+      }
+      animar(dt);
+      pintarLienzo();
+      pedirCuadro();
+    }
+
+    /* ── Eventos ── */
+    escucha(el.toque, 'pointerdown', function (ev) {
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+      if (I.fase === 'juego') {                        // en corrida el salto sale al tocar, sin esperar al clic
+        ev.preventDefault();
+        I.ignorarClic = true;
+        accionSalto();
+      } else I.ignorarClic = false;
+    });
+    escucha(el.toque, 'click', function (ev) {
+      if (I.ignorarClic) { I.ignorarClic = false; return; }
+      if (I.fase === 'juego' && !I.pausa) return;
+      if (ev.detail === 0 && ahora() - I.ultimaTeclaSalto < 400) return;   // clic sintético del teclado: ya se atendió
+      accionSalto();
+    });
+    escucha(el.toque, 'contextmenu', function (ev) { if (I.fase === 'juego') ev.preventDefault(); });
+    escucha(el.cobrar, 'click', function (ev) {
+      if (ev.detail === 0 && ahora() - I.ultimaTeclaSalto < 400) return;   // Espacio era para saltar, no para cobrar
+      cobrar();
+    });
+    botonesModo.forEach(function (b) {
+      escucha(b, 'click', function (ev) {
+        cambiarModo(b.getAttribute('data-pt-modo-btn'));
+        if (ev.detail > 0) { try { el.toque.focus({ preventScroll: true }); } catch (err) { /* nada */ } }
+      });
+    });
+    botonesApuesta.forEach(function (b) {
+      escucha(b, 'click', function (ev) {
+        cambiarApuesta(Number(b.getAttribute('data-pt-apuesta')));
+        if (ev.detail > 0) { try { el.toque.focus({ preventScroll: true }); } catch (err) { /* nada */ } }
+      });
+    });
+    escucha(el.verificar, 'click', function () {
+      var ant = I.anterior;
+      if (!ant) return;
+      huellaDe(ant.semilla).then(function (h) {
+        if (I !== yo || I.anterior !== ant) return;
+        ant.verificada = !!h && !!ant.huella && h === ant.huella;
+        pintarRuta();
+      });
+    });
+    escucha(document, 'keydown', alTeclaAbajo, true);
+    escucha(document, 'keyup', alTeclaArriba, true);
+    escucha(document, 'visibilitychange', function () { revisarActividad(); });
+    escucha(root, 'focusin', function () { I.atencion = true; pintarSaldo(); });
+    escucha(root, 'pointerenter', pintarSaldo);
+    escucha(document, 'pointerdown', function (ev) { I.atencion = root.contains(ev.target); }, true);
+
+    if (window.ResizeObserver) {
+      var ro = new window.ResizeObserver(reajustarLuego);
+      ro.observe(el.escena);
+      I.limpieza.push(function () { ro.disconnect(); });
+    } else escucha(window, 'resize', reajustarLuego);
+
+    if (window.IntersectionObserver) {
+      var io = new window.IntersectionObserver(function (entradas) {
+        if (I !== yo) return;
+        I.enVista = entradas[entradas.length - 1].isIntersecting;
+        revisarActividad();
+      });
+      io.observe(el.escena);
+      I.limpieza.push(function () { io.disconnect(); });
+    }
+    I.enVista = enPantalla();
+
+    if (mm) {
+      var alCambiarMovimiento = function () { if (I === yo) I.reducir = !!mm.matches; };
+      if (mm.addEventListener) { mm.addEventListener('change', alCambiarMovimiento); I.limpieza.push(function () { mm.removeEventListener('change', alCambiarMovimiento); }); }
+      else if (mm.addListener) { mm.addListener(alCambiarMovimiento); I.limpieza.push(function () { mm.removeListener(alCambiarMovimiento); }); }
+    }
+
+    /* ── Ganchos internos (los usa PanteraGame.pruebas) ── */
+    I.api = {
+      cobrar: cobrar, empezar: empezar, accionSalto: accionSalto, avanzarUnPaso: avanzarUnPaso,
+      pintarLienzo: pintarLienzo, pintarPanel: pintarPanel, irAReposo: irAReposo, prepararRuta: prepararRuta,
+      revisarActividad: revisarActividad, cambiarModo: cambiarModo, cambiarApuesta: cambiarApuesta, animar: animar
+    };
+
+    /* ── Arranque ── */
+    prepararRuta();
+    irAReposo();
+    if (ajustarLienzo()) pintarLienzo();
+    revisarActividad();
+    return PanteraGame;
+  }
+
+  /* Solo para pruebas automáticas: no forma parte del contrato con el anfitrión. */
+  var pruebas = {
+    estado: function () {
+      if (!I) return null;
+      var e = I.estado;
+      return {
+        fase: I.fase, modo: I.modo, pausa: I.pausa, apuesta: I.apuesta, mejor: I.mejor, atencion: I.atencion,
+        totems: e.cruzados, vivo: e.vivo, pasos: e.t, saltos: e.toques.length, y: e.y, vy: e.vy, dist: e.dist,
+        semilla: I.semilla, huella: I.huella, semillaCorrida: e.semilla,
+        historial: I.historial.length, bucle: !!I.raf, reducir: I.reducir, anchoPx: I.pw,
+        bloqueado: ahora() < I.bloqueoHasta
+      };
+    },
+    efectos: function () {
+      return I ? { particulas: I.particulas.length, sacudida: I.sacudeT >= 0, destello: !!I.destello, estela: I.estela.length } : null;
+    },
+    piloto: function (si) { if (I) I.piloto = !!si; },
+    contarCuadros: function () { return I ? I.cuadros : 0; },
+    fijarSemilla: function (s) {
+      if (!I) return;
+      I.semillaFija = (s === null || s === undefined) ? null : String(s);
+      if (I.fase !== 'juego') { I.api.prepararRuta(); if (I.fase === 'reposo') I.api.irAReposo(); }
+    },
+    quitarBloqueo: function () { if (I) I.bloqueoHasta = 0; },
+    /* Detiene el reloj del bucle (la simulación solo avanza con `avanzar`): capturas estables. */
+    congelar: function (si) { if (I) { I.congelado = !!si; I.acum = 0; I.ultimoTs = 0; } },
+    /* Avanza la simulación sin esperar al reloj. o = { pasos, hastaTotems, piloto } */
+    avanzar: function (o) {
+      if (!I) return null;
+      o = o || {};
+      var max = o.pasos > 0 ? o.pasos : 120 * 600, n = 0, previo = I.piloto;
+      if (o.piloto !== undefined) I.piloto = !!o.piloto;
+      while (I.fase === 'juego' && !I.pausa && n < max) {
+        if (o.hastaTotems !== undefined && I.estado.cruzados >= o.hastaTotems) break;
+        I.api.avanzarUnPaso();
+        n++;
+      }
+      I.piloto = previo;
+      I.acum = 0;
+      I.api.pintarLienzo();
+      return pruebas.estado();
+    },
+    cuadro: function (dt) { if (I) { I.reloj += dt || 0; I.api.animar(dt || 0); I.api.pintarLienzo(); } }
+  };
+
+  var PanteraGame = {
+    version: '1.0.0',
+    mount: montar,
+    unmount: desmontar,
+    /* El anfitrión avisa cuando la pestaña del juego se muestra u oculta. */
+    setVisible: function (si) {
+      visibleAnfitrion = !!si;
+      if (I) I.api.revisarActividad(true);
+    },
+    /* Opcional: lleva el foco a la escena (p. ej. al abrir la pestaña del juego) para que Espacio salte sin hacer clic antes. */
+    enfocar: function () { if (I) { try { I.el.toque.focus({ preventScroll: true }); } catch (err) { /* nada */ } } },
+    C: C,
+    RANGOS: RANGOS,
+    sim: sim,
+    mult: mult,
+    multCent: multCent,
+    textoMult: textoMult,
+    pago: pago,
+    rango: rango,
+    pruebas: pruebas
+  };
+
+  raiz.PanteraGame = PanteraGame;
+})(typeof window !== 'undefined' ? window : this);
+
+/* PANTERA cobra y paga contra el saldo de la página; es la pestaña que abre la demo */
+PanteraGame.mount({ root: document.getElementById('pt-root'), cobra, paga, fmt, getSaldo: () => saldo });
+PanteraGame.setVisible(!document.hidden);
+document.addEventListener('visibilitychange', () => { PanteraGame.setVisible(!document.hidden && !$('mesa-pantera').hidden); });
+
+/* Teléfono: al tocar el juego, la página se acomoda para que la escena y el botón Cobrar quepan bajo la barra.
+   Se engancha al clic (el mismo gesto que arranca la corrida), así deslizar la página no lo dispara. */
+(function(){
+  const raiz = document.getElementById('pt-root'); if (!raiz) return;
+  const ancla = raiz.querySelector('#pt-l-modo') || raiz;
+  const escena = raiz.querySelector('.pt-escena'), cobrar = raiz.querySelector('.pt-cobrar');
+  raiz.addEventListener('click', () => {
+    if (window.innerWidth >= 760 || !escena) return;
+    const barra = document.querySelector('.top');
+    const altoBarra = barra ? barra.getBoundingClientRect().height : 0;
+    const c = cobrar ? cobrar.getBoundingClientRect() : null;
+    const fin = Math.max(escena.getBoundingClientRect().bottom, c && c.height ? c.bottom : 0);
+    if (fin <= window.innerHeight - 8) return;
+    const mover = Math.min(fin - (window.innerHeight - 12), ancla.getBoundingClientRect().top - altoBarra - 8);
+    if (mover > 4) window.scrollBy({ top: mover, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
+})();
+
+/* init */
+pintaSaldo(false);
+</script>
+</body>
+</html>
